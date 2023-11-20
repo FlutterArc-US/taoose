@@ -70,9 +70,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     final User? user = auth.currentUser;
     final uid = user?.uid;
     if (uid != null && uid.isNotEmpty) {
-      await firestoreInstance
-          .doc(getUid())
-          .set({'online': status}, SetOptions(merge: true));
+      await FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(uid)
+          .update({'online': status});
     }
   }
 

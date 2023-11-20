@@ -25,6 +25,33 @@ class _CustomChatState extends State<CustomChat> {
   final CollectionReference firestoreInstance2 =
       FirebaseFirestore.instance.collection('TaousUser');
 
+  /// [on typing]
+  Future<void> _updateTypingStatus({required bool isTyping}) async {
+    var userid = Ncontroller.getUid();
+
+    if (!isTyping) {
+      await FirebaseFirestore.instance
+          .collection('messages')
+          .doc(widget.chat)
+          .set({
+        'typing': FieldValue.arrayRemove([userid])
+      }, SetOptions(merge: true)).catchError((_) {});
+    } else {
+      await FirebaseFirestore.instance
+          .collection('messages')
+          .doc(widget.chat)
+          .set({
+        'typing': FieldValue.arrayUnion([userid])
+      }, SetOptions(merge: true)).catchError((_) {});
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _updateTypingStatus(isTyping: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -51,14 +78,14 @@ class _CustomChatState extends State<CustomChat> {
                 var firstData = snapshot.data!.docs;
                 //print(firstData[0]['content'].toString() + 'ssssssssssss');
                 return FutureBuilder<DocumentSnapshot>(
-                  future: firstData[0]['idTo'] ==
-                          Ncontroller.getUid().toString()
-                      ? firestoreInstance2
-                          .doc(firstData[0]['idFrom'].toString())
-                          .get()
-                      : firestoreInstance2
-                          .doc(firstData[0]['idTo'].toString())
-                          .get(),
+                  future:
+                      firstData[0]['idTo'] == Ncontroller.getUid().toString()
+                          ? firestoreInstance2
+                              .doc(firstData[0]['idFrom'].toString())
+                              .get()
+                          : firestoreInstance2
+                              .doc(firstData[0]['idTo'].toString())
+                              .get(),
                   builder: (BuildContext context,
                       AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasError) {
@@ -168,21 +195,53 @@ class _CustomChatState extends State<CustomChat> {
                                     ],
                                   ),
                                   SizedBox(height: 2.v),
+
+                                  /// [typing]
                                   Row(
                                     children: [
                                       Expanded(
-                                        child: Text(
-                                          firstData[0]['idFrom'].toString() !=
-                                                  Ncontroller.getUid()
-                                                      .toString()
-                                              ? firstData[0]['content']
-                                                  .toString()
-                                              : "You: " +
-                                                  firstData[0]['content']
-                                                      .toString(),
-                                          style: theme.textTheme.bodyMedium,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                        child: StreamBuilder<DocumentSnapshot>(
+                                            stream: firestoreInstance
+                                                .doc(widget.chat.toString())
+                                                .snapshots(),
+                                            builder: (context,
+                                                AsyncSnapshot<DocumentSnapshot>
+                                                    snapshot) {
+                                              final data = snapshot.data;
+
+                                              final typingList =
+                                                  data?['typing'];
+                                              final isPeerUserTyping =
+                                                  List.from(typingList ?? [])
+                                                      .any((element) =>
+                                                          element !=
+                                                          Ncontroller.getUid()
+                                                              .toString());
+                                              return isPeerUserTyping
+                                                  ? const Text(
+                                                      'typing...',
+                                                      style: TextStyle(
+                                                          color: Colors.green),
+                                                    )
+                                                  : Text(
+                                                      firstData[0]['idFrom']
+                                                                  .toString() !=
+                                                              Ncontroller
+                                                                      .getUid()
+                                                                  .toString()
+                                                          ? firstData[0]
+                                                                  ['content']
+                                                              .toString()
+                                                          : "You: " +
+                                                              firstData[0][
+                                                                      'content']
+                                                                  .toString(),
+                                                      style: theme
+                                                          .textTheme.bodyMedium,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    );
+                                            }),
                                       ),
                                       Spacer(),
                                       StreamBuilder<DocumentSnapshot>(
@@ -196,14 +255,15 @@ class _CustomChatState extends State<CustomChat> {
                                               AsyncSnapshot<DocumentSnapshot>
                                                   snapshot) {
                                             var data = snapshot.data;
-                                           //print(data?['unread'].toString());
+                                            //print(data?['unread'].toString());
                                             if (data == null) {
                                               return Container();
                                             } else {
                                               if (firstData[0]['idFrom']
-                                                      .toString() !=
-                                                  Ncontroller.getUid()
-                                                      .toString() && data['unread']>0) {
+                                                          .toString() !=
+                                                      Ncontroller.getUid()
+                                                          .toString() &&
+                                                  data['unread'] > 0) {
                                                 return Container(
                                                   padding: EdgeInsets.symmetric(
                                                     horizontal: 6.h,
