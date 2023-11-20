@@ -40,13 +40,14 @@ class BottomChatWidget {
             ..set({'unread': 1}).catchError((_) {
               print("not successful!");
             });
-        } else{
+        } else {
           FirebaseFirestore.instance
               .collection('messages')
               .doc(groupChatId)
               .collection(groupChatId)
               .doc('counter')
-              .update({'unread': FieldValue.increment(1)});}
+              .update({'unread': FieldValue.increment(1)});
+        }
       });
       // type: 0 = text, 1 = image, 2 = sticker
       if (content.trim() != '') {
@@ -95,8 +96,9 @@ class BottomChatWidget {
               "status": 1
             },
           );
-        });          
-        sending.value = false; //listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+        });
+        sending.value =
+            false; //listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
       } else {
         Get.snackbar('Empty message', 'Nothing to send');
       }
@@ -161,36 +163,52 @@ class BottomChatWidget {
                                     maxLines: 2,
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: Container(
-                                        height: 6.adaptSize,
-                                        width: 6.adaptSize,
-                                        margin: EdgeInsets.only(
-                                            bottom: 2.v, left: 2.h),
-                                        decoration: BoxDecoration(
-                                          color: appTheme.red400,
-                                          borderRadius: BorderRadius.circular(
-                                            3.h,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(left: 2.h),
-                                        child: Text(
-                                          "lbl_online".tr,
-                                          style: CustomTextStyles
-                                              .bodySmallBlack900,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
+                                StreamBuilder<
+                                        DocumentSnapshot<Map<String, dynamic>>>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('TaousUser')
+                                        .doc(peeruid)
+                                        .snapshots(),
+                                    builder: (context, snapshot) {
+                                      final online =
+                                          snapshot.data?['online'] ?? false;
+                                      return !online
+                                          ? const SizedBox()
+                                          : Row(
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      Alignment.bottomLeft,
+                                                  child: Container(
+                                                    height: 6.adaptSize,
+                                                    width: 6.adaptSize,
+                                                    margin: EdgeInsets.only(
+                                                        bottom: 2.v, left: 2.h),
+                                                    decoration: BoxDecoration(
+                                                      color: appTheme.red400,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                        3.h,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 2.h),
+                                                    child: Text(
+                                                      "lbl_online".tr,
+                                                      style: CustomTextStyles
+                                                          .bodySmallBlack900,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                    })
                               ],
                             ),
                           ),
@@ -253,34 +271,24 @@ class BottomChatWidget {
                           },
                         ),
                       ),
-
-
-
-
-
-
-
-
-
                       sending.value == true
                           ? Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
                                 children: [
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: Container(
                                       margin: EdgeInsets.only(
-                                        left: 97.h,
-                                        top: 10.v,
-                                        right: 15.h
-                                      ),
+                                          left: 97.h, top: 10.v, right: 15.h),
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 16.h,
                                         vertical: 15.v,
                                       ),
-                                      decoration: AppDecoration.fillGray10003.copyWith(
-                                        borderRadius: BorderRadiusStyle.customBorderTL151,
+                                      decoration:
+                                          AppDecoration.fillGray10003.copyWith(
+                                        borderRadius:
+                                            BorderRadiusStyle.customBorderTL151,
                                       ),
                                       child: SizedBox(
                                         width: 213.h,
@@ -288,7 +296,8 @@ class BottomChatWidget {
                                           chatContent.value.toString(),
                                           maxLines: 1000,
                                           overflow: TextOverflow.ellipsis,
-                                          style: CustomTextStyles.bodyMedium14.copyWith(
+                                          style: CustomTextStyles.bodyMedium14
+                                              .copyWith(
                                             height: 1.50,
                                           ),
                                         ),
@@ -302,13 +311,15 @@ class BottomChatWidget {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Padding(
-                                          padding: EdgeInsets.only(top: 1.v, right: 21),
+                                          padding: EdgeInsets.only(
+                                              top: 1.v, right: 21),
                                           child: Text(
                                             "Sending...",
-                                            style: CustomTextStyles.bodySmallSkModernistBlack900,
+                                            style: CustomTextStyles
+                                                .bodySmallSkModernistBlack900,
                                           ),
                                         ),
-                                        
+
                                         /*CustomImageView(
                                           svgPath: ImageConstant.imgCheckmarkRed400,
                                           height: 16.adaptSize,
@@ -320,7 +331,7 @@ class BottomChatWidget {
                                   ),
                                 ],
                               ),
-                          )
+                            )
                           : Container()
                     ]),
                   ),

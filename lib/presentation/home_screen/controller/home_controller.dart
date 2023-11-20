@@ -5,7 +5,7 @@ import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/presentation/home_screen/models/home_model.dart';
 import 'package:taousapp/widgets/custom_bottom_bar.dart';
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with WidgetsBindingObserver {
   //late String username = "null";
   final FirebaseAuth auth = FirebaseAuth.instance;
   final CollectionReference firestoreInstance =
@@ -59,15 +59,39 @@ class HomeController extends GetxController {
   }
 
   void getBirthday() async {
-    await firestoreInstance
-        .doc(getUid().toString())
-        .get()
-        .then((birth) {
-          if(birth.toString().contains('birthday'))
-          {
-            birthday.value = birth['birthday'].toString();
-          }
-        } );
+    await firestoreInstance.doc(getUid().toString()).get().then((birth) {
+      if (birth.toString().contains('birthday')) {
+        birthday.value = birth['birthday'].toString();
+      }
+    });
+  }
+
+  Future<void> updateOnlineOfflineUserStatus({required bool status}) async {
+    final User? user = auth.currentUser;
+    final uid = user?.uid;
+    if (uid != null && uid.isNotEmpty) {
+      await firestoreInstance
+          .doc(getUid())
+          .set({'online': status}, SetOptions(merge: true));
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    updateOnlineOfflineUserStatus(status: false);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.detached) {
+      updateOnlineOfflineUserStatus(status: false);
+    } else {
+      updateOnlineOfflineUserStatus(status: true);
+    }
   }
 
   RxInt selectedIndex = 0.obs;
@@ -81,5 +105,7 @@ class HomeController extends GetxController {
     getUserName();
     getGender();
     getBirthday();
+    WidgetsBinding.instance.addObserver(this);
+    updateOnlineOfflineUserStatus(status: true);
   }
 }
