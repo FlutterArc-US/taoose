@@ -20,6 +20,7 @@ class HomeScreen extends GetWidget<HomeController> {
       : super(
           key: key,
         );
+
   @override
   Widget build(BuildContext context) {
     Get.put(HomeController());
