@@ -1,3 +1,5 @@
+import 'package:taousapp/presentation/comments/bindings/comments_binding.dart';
+import 'package:taousapp/presentation/comments/views/comments_view.dart';
 import 'package:taousapp/presentation/settings_screen/account_management_screen/account_management_screen.dart';
 import 'package:taousapp/presentation/settings_screen/account_management_screen/binding/account_management_binding.dart';
 import 'package:taousapp/presentation/edit_profile_screen/binding/edit_profile_binding.dart';
@@ -93,6 +95,7 @@ class AppRoutes {
       '/personal_information_screen';
   static const String birthdayScreen = '/birthday_screen';
   static const String genderScreen = '/gender_screen';
+  static const String commentsScreen = '/comments_screen';
 
   static List<GetPage> pages = [
     GetPage(
@@ -250,6 +253,13 @@ class AppRoutes {
       page: () => SplashoneScreen(),
       bindings: [
         SplashoneBinding(),
+      ],
+    ),
+    GetPage(
+      name: commentsScreen,
+      page: () => CommentsView(),
+      bindings: [
+        CommentsBinding(),
       ],
     )
   ];

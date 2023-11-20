@@ -201,14 +201,19 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                         ),
                       ),
                     ),
-                    CustomIconButton(
-                      decoration: IconButtonStyleHelper.fillGrayProfile,
-                      height: 41.adaptSize,
-                      width: 41.adaptSize,
-                      margin: EdgeInsets.only(left: 25.h),
-                      padding: EdgeInsets.all(12.h),
-                      child: CustomImageView(
-                        svgPath: ImageConstant.imgLightbulb,
+                    InkWell(
+                      onTap: () {
+                        Get.toNamed(AppRoutes.commentsScreen, arguments: type[1]);
+                      },
+                      child: CustomIconButton(
+                        decoration: IconButtonStyleHelper.fillGrayProfile,
+                        height: 41.adaptSize,
+                        width: 41.adaptSize,
+                        margin: EdgeInsets.only(left: 25.h),
+                        padding: EdgeInsets.all(12.h),
+                        child: CustomImageView(
+                          svgPath: ImageConstant.imgLightbulb,
+                        ),
                       ),
                     ),
                     Padding(
