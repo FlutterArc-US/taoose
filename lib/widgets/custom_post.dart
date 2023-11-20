@@ -8,8 +8,11 @@ import 'package:taousapp/theme/app_decoration.dart';
 class CustomPost extends StatelessWidget {
   int index;
   var data;
+
   CustomPost(this.data, this.index, {super.key});
+
   var controller = Get.find<PostController>();
+
   @override
   Widget build(BuildContext context) {
     RxInt liked = 0.obs;
@@ -363,29 +366,37 @@ class CustomPost extends StatelessWidget {
                             ),
                             Align(
                               alignment: Alignment.topRight,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 16.h),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomImageView(
-                                      imagePath: ImageConstant.imgCommenticon,
-                                      height: 25.adaptSize,
-                                      width: 25.adaptSize,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                        left: 5.h,
-                                        top: 1.v,
+                              child: InkWell(
+                                onTap: () {
+                                  Get.toNamed(AppRoutes.commentsScreen,
+                                      arguments: controller.posts[index]);
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 16.h),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CustomImageView(
+                                        imagePath: ImageConstant.imgCommenticon,
+                                        height: 25.adaptSize,
+                                        width: 25.adaptSize,
                                       ),
-                                      child: Text(
-                                        "lbl_25".tr,
-                                        style: CustomTextStyles
-                                            .bodySmallPrimaryContainer,
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          left: 5.h,
+                                          top: 1.v,
+                                        ),
+                                        child: Text(
+                                          controller.posts[index]['comments']
+                                              .toString(),
+                                          style: CustomTextStyles
+                                              .bodySmallPrimaryContainer,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
