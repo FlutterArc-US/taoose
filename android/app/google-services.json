@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "862606080908",
+    "project_id": "apptest1-c0927",
+    "storage_bucket": "apptest1-c0927.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:862606080908:android:cffbf62991cc5f4badf4a9",
+        "android_client_info": {
+          "package_name": "com.taousapp.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM0dV7SpXRgAbGgyIeOW3gg2Kl5CDIiRE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

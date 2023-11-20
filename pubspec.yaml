@@ -1,0 +1,67 @@
+name: taousapp
+description: TaousApp
+version: 1.0.0+1
+environment:
+  sdk: '>=3.1.3 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  get: ^4.6.5
+  connectivity_plus: ^2.3.6
+  shared_preferences: ^2.0.15
+  cached_network_image: ^3.2.1
+  flutter_svg: ^1.1.6
+  outline_gradient_button: ^2.0.0+1
+  flutter_svg_provider: ^1.0.3
+  grouped_list: ^5.1.2
+  dotted_border: 2.0.0+3
+  intl: ^0.18.0
+  firebase_core: ^2.17.0
+  country_codes: ^2.2.0
+  carousel_slider: ^4.2.1
+  cloud_firestore: ^4.9.3
+  firebase_auth: ^4.10.1
+  loading_animation_widget: ^1.2.0+4
+  firebase_messaging: ^14.6.9
+  overlay_support: ^2.1.0
+  flutter_local_notifications: ^13.0.0
+  flutter_launcher_icons: ^0.13.1
+  timeago: ^3.5.0
+  firebase_storage: ^11.0.14
+  shimmer: ^3.0.0
+  dropdown_search: ^5.0.6
+  image_picker: ^1.0.0
+  permission_handler: ^10.0.0
+  line_icons: ^2.0.3
+  cupertino_icons: ^1.0.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  intl_phone_field: ^3.2.0
+
+
+flutter: 
+  uses-material-design: true
+  assets: 
+    - assets/
+    - assets/images/
+  fonts: 
+    - family: Nunito Sans
+      fonts: 
+        - asset: assets/fonts/NunitoSansRegular.ttf
+          weight: 400
+        - asset: assets/fonts/NunitoSansBold.ttf
+          weight: 700
+        - asset: assets/fonts/NunitoSansSemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/NunitoSansLight.ttf
+          weight: 300
+    - family: Plus Jakarta Sans
+      fonts: 
+        - asset: assets/fonts/PlusJakartaSansSemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/PlusJakartaSansBold.ttf
+          weight: 700
+        - asset: assets/fonts/PlusJakartaSansMedium.ttf
+          weight: 500
