@@ -78,6 +78,10 @@ class CommentsView extends GetView<CommentsController> {
                 ),
                 IconButton(
                   onPressed: () {
+                    if (commentTextController.text.trim().isEmpty) {
+                      return;
+                    }
+
                     controller.writeComment(
                       postId: postData['postId'],
                       comment: commentTextController.text,
@@ -165,7 +169,7 @@ class CommentBox extends StatelessWidget {
                           ),
                           IconButton(
                             onPressed: () {
-                              if (textEditingController.text.isEmpty) {
+                              if (textEditingController.text.trim().isEmpty) {
                                 return;
                               }
 
@@ -198,46 +202,72 @@ class CommentBox extends StatelessWidget {
               ),
               builder:
                   (context, AsyncSnapshot<List<CommentModel>> subComments) {
-                if (!subComments.hasData) {
+                if (!subComments.hasData ||
+                    subComments.hasError ||
+                    subComments.data!.isEmpty) {
                   return const SizedBox();
                 }
 
-                return Column(
-                  children: [
-                    for (final subComment in subComments.data!)
-                      FutureBuilder(
-                        future: postController
-                            .getUserDetails(subComment.commentedBy),
-                        builder: (context, subBy) {
-                          if (!subBy.hasData) {
-                            return const SizedBox();
-                          }
-
-                          final subByUser = subBy.data!;
-
-                          return Container(
-                            margin: const EdgeInsets.only(left: 30),
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  leading: CircleAvatar(
-                                    child: Text(subByUser['fullName'][0]),
-                                  ),
-                                  title: Text(subByUser['fullName']),
-                                  subtitle: Text(subComment.comment),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TimeAgoWidget(subComment.time),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                return Container(
+                  margin: const EdgeInsets.only(left: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 2),
+                        child: Row(
+                          children: [
+                            Text("Replies"),
+                            SizedBox(width: 10),
+                            Icon(Icons.reply_all),
+                          ],
+                        ),
                       ),
-                  ],
+                      Container(
+                        margin: EdgeInsets.only(bottom: 5),
+                        padding: EdgeInsets.only(right: 5, bottom: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            for (final subComment in subComments.data!)
+                              FutureBuilder(
+                                future: postController
+                                    .getUserDetails(subComment.commentedBy),
+                                builder: (context, subBy) {
+                                  if (!subBy.hasData) {
+                                    return const SizedBox();
+                                  }
+
+                                  final subByUser = subBy.data!;
+
+                                  return Column(
+                                    children: [
+                                      ListTile(
+                                        leading: CircleAvatar(
+                                          child: Text(subByUser['fullName'][0]),
+                                        ),
+                                        title: Text(subByUser['fullName']),
+                                        subtitle: Text(subComment.comment),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          TimeAgoWidget(subComment.time),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             )

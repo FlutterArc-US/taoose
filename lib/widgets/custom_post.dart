@@ -389,7 +389,8 @@ class CustomPost extends StatelessWidget {
                                           top: 1.v,
                                         ),
                                         child: Text(
-                                          "lbl_25".tr,
+                                          controller.posts[index]['comments']
+                                              .toString(),
                                           style: CustomTextStyles
                                               .bodySmallPrimaryContainer,
                                         ),
