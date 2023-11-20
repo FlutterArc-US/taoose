@@ -21,8 +21,6 @@ class FrendsController extends GetxController {
   RxList followersList = [].obs;
   RxList followingList = [].obs;
 
-  
-
   var query = FirebaseFirestore.instance.collection("TaousUser");
   TextEditingController searchController = TextEditingController();
   ScrollController scrollController = ScrollController();
@@ -41,22 +39,24 @@ class FrendsController extends GetxController {
     QuerySnapshot query = await q.get();
     friends.value = query.docs;
   }
-  RxList followersQueryFinal = [].obs;
 
+  RxList followersQueryFinal = [].obs;
 
   searchFollowers(change) {
     print(searchController.text.length);
     RxList followersQuery = [].obs;
-    print(followersList[0]);
+    // print(followersList[0]);
 
     for (int x = 0; x < followersList.length; x++) {
-      if (followersList[x]['fullName'].toString().contains(change.toString().toLowerCase()) &&
+      if (followersList[x]['fullName']
+              .toString()
+              .contains(change.toString().toLowerCase()) &&
           change.length > 0) {
-        followersQuery.addAll({followersList[x].data()} );
+        followersQuery.addAll({followersList[x].data()});
         print(followersQuery);
       }
     }
-    followersQueryFinal=followersQuery;
+    followersQueryFinal = followersQuery;
     //print(followersQuery);
   }
 
