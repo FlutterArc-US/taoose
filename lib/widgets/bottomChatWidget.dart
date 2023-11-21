@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:taousapp/common/usecases/pick_camera_image_usecase.dart';
@@ -29,7 +30,6 @@ class BottomChatWidget {
   void chatModalBottomSheet(context, fullname, username, peeruid) {
     TextEditingController messageController = TextEditingController();
     var hController = Get.find<HomeController>();
-    var listMessage;
     var userid = hController.getUid();
     var groupChatId;
     if (userid.hashCode <= peeruid.hashCode) {
@@ -71,7 +71,7 @@ class BottomChatWidget {
 
     /// [send message]
     Future<void> onSendMessage(String content, int type, {File? image}) async {
-      chatContent.value = messageController.text;
+      //  chatContent.value = messageController.text;
       FirebaseFirestore.instance
           .collection('messages')
           .doc(groupChatId)
@@ -86,7 +86,9 @@ class BottomChatWidget {
               .collection(groupChatId)
               .doc('counter')
               .set({'unread': 1}).catchError((_) {
-            print("not successful!");
+            if (kDebugMode) {
+              print("not successful!");
+            }
           });
         } else {
           FirebaseFirestore.instance
@@ -100,11 +102,11 @@ class BottomChatWidget {
       // type: 0 = text, 1 = image, 2 = sticker
       if (content.trim() != '' || image != null) {
         messageController.clear();
-        var ref =
-            FirebaseFirestore.instance.collection('messages').doc(groupChatId);
-        var documentReference = ref
-            .collection(groupChatId)
-            .doc(DateTime.now().millisecondsSinceEpoch.toString());
+        // var ref =
+        //     FirebaseFirestore.instance.collection('messages').doc(groupChatId);
+        // var documentReference = ref
+        //     .collection(groupChatId)
+        //     .doc(DateTime.now().millisecondsSinceEpoch.toString());
         sending.value = true;
         await FirebaseFirestore.instance
             .collection('TaousUser')
@@ -210,7 +212,7 @@ class BottomChatWidget {
                             onTap: () {
                               Get.back();
                             },
-                            child: Icon(Icons.arrow_drop_down))),
+                            child: const Icon(Icons.arrow_drop_down))),
                     Padding(
                       padding: const EdgeInsets.only(
                           left: 15, right: 15, top: 10, bottom: 30),
@@ -242,54 +244,81 @@ class BottomChatWidget {
                                       maxLines: 2,
                                     ),
                                   ),
-                                  StreamBuilder<
-                                          DocumentSnapshot<
-                                              Map<String, dynamic>>>(
+
+                                  /// [Typing]
+                                  StreamBuilder(
                                       stream: FirebaseFirestore.instance
-                                          .collection('TaousUser')
-                                          .doc(peeruid)
+                                          .collection('messages')
+                                          .doc(groupChatId)
                                           .snapshots(),
-                                      builder: (context, snapshot) {
-                                        final online =
-                                            snapshot.data?['online'] ?? false;
-                                        return !online
-                                            ? const SizedBox()
-                                            : Row(
-                                                children: [
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.bottomLeft,
-                                                    child: Container(
-                                                      height: 6.adaptSize,
-                                                      width: 6.adaptSize,
-                                                      margin: EdgeInsets.only(
-                                                          bottom: 2.v,
-                                                          left: 2.h),
-                                                      decoration: BoxDecoration(
-                                                        color: appTheme.red400,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                          3.h,
+                                      builder: (context, value) {
+                                        final typingList =
+                                            value.data?['typing'];
+                                        final isPeerUserTyping =
+                                            List.from(typingList ?? []).any(
+                                                (element) => element != userid);
+                                        if (isPeerUserTyping) {
+                                          return const Text(
+                                            'typing...',
+                                            style:
+                                                TextStyle(color: Colors.green),
+                                          );
+                                        }
+
+                                        return StreamBuilder<
+                                                DocumentSnapshot<
+                                                    Map<String, dynamic>>>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('TaousUser')
+                                                .doc(peeruid)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              final online =
+                                                  snapshot.data?['online'] ??
+                                                      false;
+                                              return !online
+                                                  ? const SizedBox()
+                                                  : Row(
+                                                      children: [
+                                                        Align(
+                                                          alignment: Alignment
+                                                              .bottomLeft,
+                                                          child: Container(
+                                                            height: 6.adaptSize,
+                                                            width: 6.adaptSize,
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    bottom: 2.v,
+                                                                    left: 2.h),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: appTheme
+                                                                  .red400,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                3.h,
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 2.h),
-                                                      child: Text(
-                                                        "lbl_online".tr,
-                                                        style: CustomTextStyles
-                                                            .bodySmallBlack900,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
+                                                        Align(
+                                                          alignment: Alignment
+                                                              .centerLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    left: 2.h),
+                                                            child: Text(
+                                                              "lbl_online".tr,
+                                                              style: CustomTextStyles
+                                                                  .bodySmallBlack900,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                            });
                                       })
                                 ],
                               ),
@@ -313,9 +342,11 @@ class BottomChatWidget {
                     Expanded(
                       //height: 100,
                       child: Column(children: [
+                        /// [Messages]
                         Expanded(
                           //width: MediaQuery.of(context).size.width,
                           //height: 450,
+
                           child: StreamBuilder(
                             stream: FirebaseFirestore.instance
                                 .collection('messages')
@@ -335,9 +366,11 @@ class BottomChatWidget {
                                   ),
                                 );
                               } else if (snapshot.hasData) {
-                                listMessage = snapshot.data.docs;
+                                final listMessage = snapshot.data.docs;
                                 return ListView.builder(
-                                  padding: EdgeInsets.all(10.0),
+                                  padding: const EdgeInsets.all(10.0),
+                                  itemCount: snapshot.data.docs.length,
+
                                   itemBuilder: (context, index) {
                                     if (listMessage[index]['idFrom'] ==
                                         userid) {
@@ -365,7 +398,6 @@ class BottomChatWidget {
                                     }
                                   },
                                   reverse: true,
-                                  itemCount: snapshot.data.docs.length,
                                   //controller: listScrollController,
                                 );
                               } else {
@@ -379,35 +411,35 @@ class BottomChatWidget {
                                 padding: const EdgeInsets.all(10.0),
                                 child: Column(
                                   children: [
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Container(
-                                        margin: EdgeInsets.only(
-                                            left: 97.h, top: 10.v, right: 15.h),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 16.h,
-                                          vertical: 15.v,
-                                        ),
-                                        decoration: AppDecoration.fillGray10003
-                                            .copyWith(
-                                          borderRadius: BorderRadiusStyle
-                                              .customBorderTL151,
-                                        ),
-                                        child: SizedBox(
-                                          width: 213.h,
-                                          child: Text(
-                                            chatContent.value.toString(),
-                                            maxLines: 1000,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: CustomTextStyles.bodyMedium14
-                                                .copyWith(
-                                              height: 1.50,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 5.v),
+                                    // Align(
+                                    //   alignment: Alignment.centerRight,
+                                    //   child: Container(
+                                    //     margin: EdgeInsets.only(
+                                    //         left: 97.h, top: 10.v, right: 15.h),
+                                    //     padding: EdgeInsets.symmetric(
+                                    //       horizontal: 16.h,
+                                    //       vertical: 15.v,
+                                    //     ),
+                                    //     decoration: AppDecoration.fillGray10003
+                                    //         .copyWith(
+                                    //       borderRadius: BorderRadiusStyle
+                                    //           .customBorderTL151,
+                                    //     ),
+                                    //     child: SizedBox(
+                                    //       width: 213.h,
+                                    //       child: Text(
+                                    //         chatContent.value.toString(),
+                                    //         maxLines: 1000,
+                                    //         overflow: TextOverflow.ellipsis,
+                                    //         style: CustomTextStyles.bodyMedium14
+                                    //             .copyWith(
+                                    //           height: 1.50,
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // SizedBox(height: 5.v),
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: Row(
@@ -451,7 +483,7 @@ class BottomChatWidget {
                             Align(
                               alignment: Alignment.bottomLeft,
                               child: Container(
-                                padding: EdgeInsets.only(
+                                padding: const EdgeInsets.only(
                                     left: 10, bottom: 10, top: 10),
                                 height: 60,
                                 width: double.infinity,
@@ -468,7 +500,7 @@ class BottomChatWidget {
                                         final image =
                                             await cameraUsecase(NoInput());
 
-                                        if (image != null) {
+                                        if (image.isNotEmpty) {
                                           onSendMessage('', 1,
                                               image: File(image));
                                         }
@@ -480,9 +512,7 @@ class BottomChatWidget {
                                         margin: EdgeInsets.only(bottom: 2.v),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
+                                    const SizedBox(width: 15),
                                     Expanded(
                                       child: TextField(
                                         controller: messageController,
@@ -494,7 +524,7 @@ class BottomChatWidget {
                                             updateTypingStatus(isTyping: false);
                                           }
                                         },
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                           hintText: "Write message...",
                                           hintStyle:
                                               TextStyle(color: Colors.black54),
@@ -502,21 +532,19 @@ class BottomChatWidget {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
+                                    const SizedBox(width: 15),
                                     FloatingActionButton(
                                       onPressed: () {
                                         onSendMessage(
                                             messageController.text, 0);
                                       },
-                                      child: Icon(
+                                      backgroundColor: appTheme.indigo900,
+                                      elevation: 0,
+                                      child: const Icon(
                                         Icons.send,
                                         color: Colors.white,
                                         size: 18,
                                       ),
-                                      backgroundColor: appTheme.indigo900,
-                                      elevation: 0,
                                     ),
                                   ],
                                 ),
