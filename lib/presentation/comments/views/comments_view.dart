@@ -183,6 +183,7 @@ class CommentBox extends StatelessWidget {
                                 commentOwnerId: item.commentedBy,
                               );
                               textEditingController.clear();
+                              controller.replyingTo.value = "";
                             },
                             icon: Icon(
                               Icons.reply,
