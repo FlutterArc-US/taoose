@@ -4,7 +4,6 @@ import 'package:injectable/injectable.dart';
 import 'package:taousapp/notifications/domain/data/notifications_remote_datasource.dart';
 import 'package:taousapp/notifications/domain/repository/notifications_repository.dart';
 import 'package:taousapp/notifications/domain/usecases/get_notifications.dart';
-import 'package:taousapp/notifications/domain/usecases/get_unread_notifications_count.dart';
 import 'package:taousapp/notifications/domain/usecases/update_fcm_token.dart';
 ////********** END IMPORTS **********////
 
@@ -41,13 +40,6 @@ class NotificationsRepositoryImp implements NotificationsRepository {
     GetNotificationsUsecaseInput input,
   ) async {
     return _firebaseMessagingRemoteDataSource.getNotifications(input);
-  }
-
-  @override
-  Future<GetUnreadNotificationsCountUsecaseOutput> getUnreadNotificationsCount(
-      GetUnreadNotificationsCountUsecaseInput input) {
-    return _firebaseMessagingRemoteDataSource
-        .getUnreadNotificationsCount(input);
   }
 
 ////********** END METHODS **********////

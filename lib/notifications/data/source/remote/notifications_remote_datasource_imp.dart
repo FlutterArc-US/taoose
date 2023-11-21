@@ -4,7 +4,6 @@ import 'package:injectable/injectable.dart';
 import 'package:taousapp/core/utils/logger.dart';
 import 'package:taousapp/notifications/domain/data/notifications_remote_datasource.dart';
 import 'package:taousapp/notifications/domain/usecases/get_notifications.dart';
-import 'package:taousapp/notifications/domain/usecases/get_unread_notifications_count.dart';
 import 'package:taousapp/notifications/domain/usecases/update_fcm_token.dart';
 ////********** END IMPORTS **********////
 
@@ -29,12 +28,6 @@ class NotificationsRemoteDataSourceImp
     GetNotificationsUsecaseInput input,
   ) async {
     return GetNotificationsUsecaseOutput(notifications: []);
-  }
-
-  @override
-  Future<GetUnreadNotificationsCountUsecaseOutput> getUnreadNotificationsCount(
-      GetUnreadNotificationsCountUsecaseInput input) async {
-    return GetUnreadNotificationsCountUsecaseOutput(unreadCount: 0);
   }
 
 ////********** END METHODS **********////

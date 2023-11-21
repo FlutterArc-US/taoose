@@ -3,7 +3,6 @@
 
 import 'package:taousapp/infrastructure/repository.dart';
 import 'package:taousapp/notifications/domain/usecases/get_notifications.dart';
-import 'package:taousapp/notifications/domain/usecases/get_unread_notifications_count.dart';
 import 'package:taousapp/notifications/domain/usecases/update_fcm_token.dart';
 ////********** END IMPORTS **********////
 
@@ -21,15 +20,6 @@ abstract class NotificationsRepository extends Repository {
   /// [GetNotificationsUsecaseOutput] is returned from [updateFcmToken] method
   Future<GetNotificationsUsecaseOutput> getNotifications(
     GetNotificationsUsecaseInput input,
-  );
-
-  /// [GetUnreadNotificationsCountUsecaseInput] is received
-  /// to [getUnreadNotificationsCount] method as
-  /// parameter
-  /// [GetNotificationsUsecaseOutput] is returned
-  /// from [getUnreadNotificationsCount] method
-  Future<GetUnreadNotificationsCountUsecaseOutput> getUnreadNotificationsCount(
-    GetUnreadNotificationsCountUsecaseInput input,
   );
 
 ////********** END METHODS **********////

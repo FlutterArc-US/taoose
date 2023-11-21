@@ -57,6 +57,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    getFcmToken();
     var initialzationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings =
@@ -129,13 +130,19 @@ class _MyAppState extends State<MyApp> {
       }
     });
     print('111');
-    getToken();
+    getFcmToken();
   }
 
-  late String token;
-  getToken() async {
-    token = (await FirebaseMessaging.instance.getToken())!;
-    print(token);
+  Future<void> getFcmToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    var user = FirebaseAuth.instance.currentUser;
+
+    if (fcmToken != null && user != null) {
+      FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(user.uid.toString())
+          .set({'fcmToken': fcmToken}, SetOptions(merge: true));
+    }
   }
 
   @override

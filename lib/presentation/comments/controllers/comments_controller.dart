@@ -1,9 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
+import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/post_screen/models/comment_model.dart';
+import 'package:taousapp/util/di/di.dart';
 
 class CommentsController extends GetxController {
   var replyingTo = ''.obs;
+
+  final sendNotificationUsecase = sl<SendNotificationUsecase>();
 
   Future<void> writeComment({
     required String postId,
@@ -37,7 +42,16 @@ class CommentsController extends GetxController {
         }));
 
     if (myUserId != postOwnerUserId) {
-      //TODO: Send Notification to other person
+      final input = SendNotificationUsecaseInput(
+        userId: myUserId,
+        notification: PushNotification(
+          id: 1,
+          title: 'Someone comment on your post',
+          description: comment,
+        ),
+      );
+
+      await sendNotificationUsecase(input);
     }
   }
 
@@ -77,6 +91,17 @@ class CommentsController extends GetxController {
 
     if (myUserId != commentOwnerId) {
       //TODO: Send Notification to other person
+
+      final input = SendNotificationUsecaseInput(
+        userId: myUserId,
+        notification: PushNotification(
+          id: 1,
+          title: 'Someone comment on your post',
+          description: comment,
+        ),
+      );
+
+      await sendNotificationUsecase(input);
     }
   }
 
