@@ -6,22 +6,19 @@ import 'package:taousapp/core/app_export.dart';
 class SendBubble extends StatelessWidget {
   int indexR;
   var docR;
-  SendBubble(this.indexR ,this.docR, {Key? key}) : super(key: key);
+  SendBubble(this.indexR, this.docR, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var time = DateTime.fromMillisecondsSinceEpoch(int.parse(docR['timestamp']));
+    var time =
+        DateTime.fromMillisecondsSinceEpoch(int.parse(docR['timestamp']));
     var convertedTime = DateFormat.jm().format(DateTime.parse(time.toString()));
     return Column(
       children: [
         Align(
           alignment: Alignment.centerRight,
           child: Container(
-            margin: EdgeInsets.only(
-              left: 97.h,
-              top: 10.v,
-              right: 15.h
-            ),
+            margin: EdgeInsets.only(left: 97.h, top: 10.v, right: 15.h),
             padding: EdgeInsets.symmetric(
               horizontal: 16.h,
               vertical: 15.v,
@@ -56,8 +53,12 @@ class SendBubble extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right:15, left: 4),
-                child: Icon(Icons.circle,color: theme.colorScheme.primary,size: 10,),
+                padding: const EdgeInsets.only(right: 15, left: 4),
+                child: Icon(
+                  Icons.circle,
+                  color: theme.colorScheme.primary,
+                  size: 10,
+                ),
               ),
               /*CustomImageView(
                 svgPath: ImageConstant.imgCheckmarkRed400,

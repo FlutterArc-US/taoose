@@ -41,7 +41,7 @@ class ImagePickerImagePickerHelper implements ImagePickerHelper {
           image.path.endsWith('.png')) {
         return image.path;
       } else {
-        throw ImageFileNotSupportedException();
+        throw ImageFileNotSupportedException(message: 'File not supported');
       }
     }
   }

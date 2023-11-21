@@ -10,7 +10,11 @@ class LoginUserException implements Exception {
 
 class ImageNotSelectedException implements Exception {}
 
-class ImageFileNotSupportedException implements Exception {}
+class ImageFileNotSupportedException implements Exception {
+  ImageFileNotSupportedException({this.message});
+
+  final String? message;
+}
 
 class StoragePermissionDeniedPermanently implements Exception {
   StoragePermissionDeniedPermanently({required this.message});

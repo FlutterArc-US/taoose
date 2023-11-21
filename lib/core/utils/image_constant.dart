@@ -203,4 +203,8 @@ class ImageConstant {
 
   static String imageNotFound = 'assets/images/image_not_found.png';
   static String imgCamera = 'assets/images/img_camera.svg';
+
+  static String sticker = 'assets/images/img_sticker.svg';
+
+  static String imagePlaceholder = 'assets/images/image_place_holder.svg';
 }
