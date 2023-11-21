@@ -44,7 +44,7 @@ class SendImageBubble extends StatelessWidget {
                             width: 55,
                             color: Colors.grey,
 
-                            /// [file image use here]
+                            /// [file image uisMe ? theme.cyanDark : theme.platinumse here]
                             child: Image.network(e, fit: BoxFit.cover),
                           ),
                         ),
