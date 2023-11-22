@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:taousapp/presentation/post_screen/models/comment_model.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CommentsController extends GetxController {
   var replyingTo = ''.obs;
