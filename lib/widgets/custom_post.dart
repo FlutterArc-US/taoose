@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
+import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/post_screen/controller/post_controller.dart';
 import 'package:taousapp/theme/app_decoration.dart';
+import 'package:taousapp/util/di/di.dart';
 
 // ignore: must_be_immutable
 class CustomPost extends StatelessWidget {
@@ -12,6 +15,35 @@ class CustomPost extends StatelessWidget {
   CustomPost(this.data, this.index, {super.key});
 
   var controller = Get.find<PostController>();
+
+  final sendNotificationUsecase = sl<SendNotificationUsecase>();
+
+  Future<void> sendLikeNotification({String? postOwnerId}) async {
+    final userId = controller.hController.getUid();
+
+    if (postOwnerId != null && userId != postOwnerId) {
+      final document = await FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(userId)
+          .get();
+      if (!document.exists) {
+        return;
+      }
+      final data = document.data();
+      final username = data?['fullName'];
+
+      final input = SendNotificationUsecaseInput(
+        userId: postOwnerId,
+        notification: PushNotification(
+          title: 'New liked',
+          description: '$username has liked your post',
+          id: DateTime.now().millisecondsSinceEpoch,
+        ),
+      );
+
+      await sendNotificationUsecase(input);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -254,6 +286,10 @@ class CustomPost extends StatelessWidget {
                                         //print(controller.docFetch.doc(controller.posts[index]['owner'].toString()));
                                         liked.value = 1;
                                         total.value = total.value + 1;
+
+                                        sendLikeNotification(
+                                            postOwnerId: controller.posts[index]
+                                                ['owner']);
                                         //controller.posts.refresh();
                                       },
                                       child: CustomImageView(

@@ -21,7 +21,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
 
   final sendNotificationUsecase = sl<SendNotificationUsecase>();
 
-  Future<void> sendLikeNotification({String? postOwnerId}) async {
+  Future<void> sendLikePostNotification({String? postOwnerId}) async {
     final userId = controller.hController.getUid();
 
     if (postOwnerId != null && userId != postOwnerId) {
@@ -213,7 +213,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                                 liked.value = 1;
                                 total.value = total.value + 1;
                                 controller.pController.posts.refresh();
-                                sendLikeNotification(
+                                sendLikePostNotification(
                                     postOwnerId: type[1]['owner']);
                                 //controller.posts.refresh();
                               },
