@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
 import 'package:taousapp/presentation/post_screen/models/comment_model.dart';
 
@@ -47,6 +48,7 @@ class CommentsView extends GetView<CommentsController> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   return ListView.builder(
+                    padding: const EdgeInsets.only(top: 10),
                     itemCount: comments.data!.length,
                     itemBuilder: (context, index) {
                       final item = comments.data![index];
@@ -124,155 +126,235 @@ class CommentBox extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final user = snapshot.data!;
-        return Column(
-          children: [
-            ListTile(
-              leading: CircleAvatar(
-                child: Text(user['fullName'][0]),
-              ),
-              title: Text(user['fullName']),
-              subtitle: Text(item.comment),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TimeAgoWidget(item.time),
-                TextButton(
-                  onPressed: () {
-                    controller.replyingTo.value = item.id;
-                    focus.requestFocus();
-                  },
-                  child: const Text(
-                    'Reply',
-                    style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                        fontSize: 12),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                children: [
+                  CustomImageView(
+                    imagePath: ImageConstant.imgProfile,
+                    height: 20,
+                    width: 20,
                   ),
-                ),
-              ],
-            ),
-            Obx(
-              () => controller.replyingTo.value != item.id
-                  ? const SizedBox()
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: textEditingController,
-                              decoration: const InputDecoration(
-                                hintText: 'Reply comment',
+                  const SizedBox(width: 5),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              (user['fullName'] as String).capitalizeFirst!,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(item.comment),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: InkWell(
+                          onTap: () {
+                            controller.replyingTo.value = item.id;
+                            focus.requestFocus();
+                          },
+                          child: Obx(
+                            () => Text(
+                              'Reply',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: controller.replyingTo.value == item.id
+                                    ? Colors.blue
+                                    : Colors.grey[500],
                               ),
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              if (textEditingController.text.trim().isEmpty) {
-                                return;
-                              }
-
-                              controller.writeSubComment(
-                                postId: data['postId'],
-                                commentId: item.id,
-                                comment: textEditingController.text,
-                                myUserId: homeController.auth.currentUser!.uid,
-                                category: data['description'],
-                                postOwnerId: data['owner'],
-                                commentOwnerId: item.commentedBy,
-                              );
-                              textEditingController.clear();
-                              controller.replyingTo.value = "";
-                            },
-                            icon: Icon(
-                              Icons.reply,
-                              color: Colors.grey[600],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-            ),
-            StreamBuilder(
-              stream: controller.listenToSubComments(
-                postOwnerId: data['owner'],
-                postId: data['postId'],
-                category: data['description'],
-                commentId: item.id,
-              ),
-              builder:
-                  (context, AsyncSnapshot<List<CommentModel>> subComments) {
-                if (!subComments.hasData ||
-                    subComments.hasError ||
-                    subComments.data!.isEmpty) {
-                  return const SizedBox();
-                }
-
-                return Container(
-                  margin: const EdgeInsets.only(left: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 2),
-                        child: Row(
-                          children: [
-                            Text("Replies"),
-                            SizedBox(width: 10),
-                            Icon(Icons.reply_all),
-                          ],
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(bottom: 5),
-                        padding: EdgeInsets.only(right: 5, bottom: 5),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          children: [
-                            for (final subComment in subComments.data!)
-                              FutureBuilder(
-                                future: postController
-                                    .getUserDetails(subComment.commentedBy),
-                                builder: (context, subBy) {
-                                  if (!subBy.hasData) {
-                                    return const SizedBox();
-                                  }
-
-                                  final subByUser = subBy.data!;
-
-                                  return Column(
-                                    children: [
-                                      ListTile(
-                                        leading: CircleAvatar(
-                                          child: Text(subByUser['fullName'][0]),
-                                        ),
-                                        title: Text(subByUser['fullName']),
-                                        subtitle: Text(subComment.comment),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          TimeAgoWidget(subComment.time),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                          ],
-                        ),
-                      ),
+                      const SizedBox(height: 4),
                     ],
                   ),
-                );
-              },
-            )
-          ],
+                ],
+              ),
+              Obx(
+                () => controller.replyingTo.value != item.id
+                    ? const SizedBox()
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 35,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Center(
+                                  child: TextField(
+                                    controller: textEditingController,
+                                    decoration: const InputDecoration(
+                                      contentPadding:
+                                          EdgeInsets.only(bottom: 17),
+                                      hintText: 'Reply comment',
+                                      border: InputBorder.none,
+                                      hintStyle: TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                if (textEditingController.text.trim().isEmpty) {
+                                  return;
+                                }
+
+                                controller.writeSubComment(
+                                  postId: data['postId'],
+                                  commentId: item.id,
+                                  comment: textEditingController.text,
+                                  myUserId:
+                                      homeController.auth.currentUser!.uid,
+                                  category: data['description'],
+                                  postOwnerId: data['owner'],
+                                  commentOwnerId: item.commentedBy,
+                                );
+                                textEditingController.clear();
+                                controller.replyingTo.value = "";
+                              },
+                              icon: Icon(
+                                Icons.reply,
+                                color: Colors.grey[600],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+              ),
+              StreamBuilder(
+                stream: controller.listenToSubComments(
+                  postOwnerId: data['owner'],
+                  postId: data['postId'],
+                  category: data['description'],
+                  commentId: item.id,
+                ),
+                builder:
+                    (context, AsyncSnapshot<List<CommentModel>> subComments) {
+                  if (!subComments.hasData ||
+                      subComments.hasError ||
+                      subComments.data!.isEmpty) {
+                    return const SizedBox();
+                  }
+
+                  return Container(
+                    margin: const EdgeInsets.only(left: 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(right: 5),
+                          child: Column(
+                            children: [
+                              for (final subComment in subComments.data!)
+                                FutureBuilder(
+                                  future: postController
+                                      .getUserDetails(subComment.commentedBy),
+                                  builder: (context, subBy) {
+                                    if (!subBy.hasData) {
+                                      return const SizedBox();
+                                    }
+
+                                    final subByUser = subBy.data!;
+
+                                    return Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            CustomImageView(
+                                              imagePath:
+                                                  ImageConstant.imgProfile,
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 4,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey[300],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        (subByUser['fullName']
+                                                                as String)
+                                                            .capitalizeFirst!,
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 2),
+                                                      Text(subComment.comment),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TimeAgoWidget(subComment.time),
+                                          ],
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
         );
       },
     );
