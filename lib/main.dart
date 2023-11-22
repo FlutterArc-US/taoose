@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taousapp/core/constants/color_constant.dart';
 import 'package:taousapp/notifications/domain/usecases/enable_notification_setting.dart';
 import 'package:taousapp/notifications/domain/usecases/initialize_local_notification.dart';
@@ -182,27 +183,29 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData().copyWith(
-          dividerColor: Colors.transparent,
-          colorScheme: ThemeData(
-                  colorScheme: ColorScheme.fromSwatch()
-                      .copyWith(secondary: ColorConstant.teal200))
-              .colorScheme
-              .copyWith(primary: ColorConstant.teal200)),
-      translations: AppLocalization(),
-      locale: Get.deviceLocale, //for setting localization strings
-      fallbackLocale: Locale('en', 'US'),
-      title: 'taousapp',
-      initialBinding: InitialBindings(),
-      initialRoute: AppRoutes.initialRoute,
-      getPages: AppRoutes.pages,
-      builder: ((context, child) {
-        return MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-            child: child!);
-      }),
+    return ProviderScope(
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData().copyWith(
+            dividerColor: Colors.transparent,
+            colorScheme: ThemeData(
+                    colorScheme: ColorScheme.fromSwatch()
+                        .copyWith(secondary: ColorConstant.teal200))
+                .colorScheme
+                .copyWith(primary: ColorConstant.teal200)),
+        translations: AppLocalization(),
+        locale: Get.deviceLocale, //for setting localization strings
+        fallbackLocale: Locale('en', 'US'),
+        title: 'taousapp',
+        initialBinding: InitialBindings(),
+        initialRoute: AppRoutes.initialRoute,
+        getPages: AppRoutes.pages,
+        builder: ((context, child) {
+          return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: child!);
+        }),
+      ),
     );
   }
 }

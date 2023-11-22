@@ -6,12 +6,15 @@ import 'package:taousapp/core/app_export.dart';
 class RecieveBubble extends StatelessWidget {
   int indexR;
   var docR;
-  RecieveBubble(this.indexR ,this.docR, {Key? key}) : super(key: key);
-  
+  RecieveBubble(this.indexR, this.docR, {Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    var time = DateTime.fromMillisecondsSinceEpoch(int.parse(docR['timestamp']));
-    var convertedTime = DateFormat.jm().format(DateTime.parse(time.toString()));print(DateTime.fromMillisecondsSinceEpoch(int.parse(docR['timestamp'])).hour);
+    var time =
+        DateTime.fromMillisecondsSinceEpoch(int.parse(docR['timestamp']));
+    var convertedTime = DateFormat.jm().format(DateTime.parse(time.toString()));
+    print(
+        DateTime.fromMillisecondsSinceEpoch(int.parse(docR['timestamp'])).hour);
     return Column(
       children: [
         Container(
@@ -25,6 +28,7 @@ class RecieveBubble extends StatelessWidget {
             vertical: 17.v,
           ),
           decoration: AppDecoration.fillPrimary.copyWith(
+            color: theme.colorScheme.primary.withOpacity(0.07),
             borderRadius: BorderRadiusStyle.customBorderTL15,
           ),
           child: SizedBox(
@@ -52,7 +56,7 @@ class RecieveBubble extends StatelessWidget {
                   style: CustomTextStyles.bodySmallSkModernistBlack900,
                 ),
               ),
-              
+
               /*CustomImageView(
                 svgPath: ImageConstant.imgCheckmarkRed400,
                 height: 16.adaptSize,

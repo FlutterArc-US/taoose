@@ -46,6 +46,12 @@ dependencies:
   # river-pod
   flutter_riverpod: ^2.4.8
 
+  # emoji_picker_flutter
+  emoji_picker_flutter: ^1.6.3
+
+  fluttertoast: ^8.2.4
+
+
 
 
 dev_dependencies:

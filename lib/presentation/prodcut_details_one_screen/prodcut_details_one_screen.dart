@@ -54,7 +54,11 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
     var type = Get.arguments;
     RxInt liked = 0.obs;
     RxInt total = 0.obs;
-    total.value = type[1]['likedBy'].length;
+    if (type[1].containsKey('likedBy')) {
+      total.value = type[1]['likedBy'].length;
+    } else {
+      total.value = 0;
+    }
     mediaQueryData = MediaQuery.of(context);
     if (type[1]['likedBy']
         .contains(controller.hController.getUid().toString())) {
