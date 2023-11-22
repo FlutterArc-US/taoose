@@ -166,6 +166,10 @@ class CommentBox extends StatelessWidget {
                           ],
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TimeAgoWidget(item.time),
+                      ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: InkWell(
@@ -288,7 +292,8 @@ class CommentBox extends StatelessWidget {
                                     return Column(
                                       children: [
                                         Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             CustomImageView(
                                               imagePath:
@@ -332,15 +337,15 @@ class CommentBox extends StatelessWidget {
                                                     ],
                                                   ),
                                                 ),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10),
+                                                  child: TimeAgoWidget(
+                                                      subComment.time),
+                                                ),
                                               ],
                                             ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            TimeAgoWidget(subComment.time),
                                           ],
                                         ),
                                       ],
