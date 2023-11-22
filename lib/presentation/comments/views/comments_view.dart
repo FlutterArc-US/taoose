@@ -166,10 +166,10 @@ class CommentBox extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: TimeAgoWidget(item.time),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(horizontal: 10),
+                      //   child: TimeAgoWidget(item.time),
+                      // ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: InkWell(
@@ -337,13 +337,13 @@ class CommentBox extends StatelessWidget {
                                                     ],
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 10),
-                                                  child: TimeAgoWidget(
-                                                      subComment.time),
-                                                ),
+                                                // Padding(
+                                                //   padding: const EdgeInsets
+                                                //       .symmetric(
+                                                //       horizontal: 10),
+                                                //   child: TimeAgoWidget(
+                                                //       subComment.time),
+                                                // ),
                                               ],
                                             ),
                                           ],
@@ -368,35 +368,35 @@ class CommentBox extends StatelessWidget {
   }
 }
 
-class TimeAgoWidget extends StatefulWidget {
-  final String formatedTime;
-
-  TimeAgoWidget(this.formatedTime);
-
-  @override
-  State<TimeAgoWidget> createState() => _TimeAgoWidgetState();
-}
-
-class _TimeAgoWidgetState extends State<TimeAgoWidget> {
-  @override
-  void initState() {
-    super.initState();
-    update();
-  }
-
-  Future<void> update() async {
-    await Future.delayed(const Duration(seconds: 10));
-    if (mounted) {
-      setState(() {});
-      update();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      timeago.format(DateTime.parse(widget.formatedTime)),
-      style: TextStyle(color: Colors.grey[400], fontSize: 12),
-    );
-  }
-}
+// class TimeAgoWidget extends StatefulWidget {
+//   final String formatedTime;
+//
+//   TimeAgoWidget(this.formatedTime);
+//
+//   @override
+//   State<TimeAgoWidget> createState() => _TimeAgoWidgetState();
+// }
+//
+// class _TimeAgoWidgetState extends State<TimeAgoWidget> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     update();
+//   }
+//
+//   Future<void> update() async {
+//     await Future.delayed(const Duration(seconds: 10));
+//     if (mounted) {
+//       setState(() {});
+//       update();
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Text(
+//       timeago.format(DateTime.parse(widget.formatedTime)),
+//       style: TextStyle(color: Colors.grey[400], fontSize: 12),
+//     );
+//   }
+// }

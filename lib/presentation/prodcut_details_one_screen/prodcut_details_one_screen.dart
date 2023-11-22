@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
+import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
+import 'package:taousapp/util/di/di.dart';
 
 import 'controller/prodcut_details_one_controller.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +14,39 @@ import 'package:taousapp/widgets/custom_icon_button.dart';
 
 // ignore_for_file: must_be_immutable
 class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
-  const ProdcutDetailsOneScreen({Key? key})
+  ProdcutDetailsOneScreen({Key? key})
       : super(
           key: key,
         );
+
+  final sendNotificationUsecase = sl<SendNotificationUsecase>();
+
+  Future<void> sendLikePostNotification({String? postOwnerId}) async {
+    final userId = controller.hController.getUid();
+
+    if (postOwnerId != null && userId != postOwnerId) {
+      final document = await FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(userId)
+          .get();
+      if (!document.exists) {
+        return;
+      }
+      final data = document.data();
+      final username = data?['fullName'];
+
+      final input = SendNotificationUsecaseInput(
+        userId: postOwnerId,
+        notification: PushNotification(
+          title: 'New liked',
+          description: '$username has liked your post',
+          id: DateTime.now().millisecondsSinceEpoch,
+        ),
+      );
+
+      await sendNotificationUsecase(input);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,6 +197,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                             )
                           : CustomIconButton(
                               onTap: () async {
+                                //TODO: NOTIFICATION
                                 type[1]['likedBy'].add(
                                     controller.hController.getUid().toString());
                                 await controller.pController.docFetch
@@ -180,6 +213,8 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                                 liked.value = 1;
                                 total.value = total.value + 1;
                                 controller.pController.posts.refresh();
+                                sendLikePostNotification(
+                                    postOwnerId: type[1]['owner']);
                                 //controller.posts.refresh();
                               },
                               height: 41.adaptSize,

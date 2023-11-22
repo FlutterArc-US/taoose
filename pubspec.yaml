@@ -43,10 +43,11 @@ dependencies:
   get_it: ^7.2.0
   injectable: ^2.1.0
 
+  # river-pod
+  flutter_riverpod: ^2.4.8
+
   # emoji_picker_flutter
   emoji_picker_flutter: ^1.6.3
-
-  flutter_riverpod: ^2.4.8
 
   fluttertoast: ^8.2.4
 
@@ -63,8 +64,6 @@ dev_dependencies:
   freezed: ^2.3.2
   injectable_generator: ^2.1.4
   json_serializable: ^6.6.1
-
-
 
 
 flutter: 

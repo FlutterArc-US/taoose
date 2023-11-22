@@ -8,10 +8,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taousapp/core/constants/color_constant.dart';
+import 'package:taousapp/notifications/domain/usecases/enable_notification_setting.dart';
+import 'package:taousapp/notifications/domain/usecases/initialize_local_notification.dart';
 import 'package:taousapp/util/di/di.dart';
 
 import 'core/app_export.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'notifications/presentation/providers/enable_notification_setting_provider.dart';
+import 'notifications/presentation/providers/initialize_local_notification_provider.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,9 +60,37 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
 
+  Future<void> readyNotificationSystem() async {
+    await enableNotificationPermission();
+    await initializeLocalNotification();
+  }
+
+  Future<void> enableNotificationPermission() async {
+    try {
+      final enableNotificationSettingUsecase =
+          sl<EnableNotificationSettingUsecase>();
+      await enableNotificationSettingUsecase(
+        EnableNotificationSettingUsecaseInput(),
+      );
+    } catch (_) {}
+  }
+
+  Future<void> initializeLocalNotification() async {
+    try {
+      final initializeLocalNotificationUsecase =
+          sl<InitializeLocalNotificationUsecase>();
+
+      await initializeLocalNotificationUsecase(
+        InitializeLocalNotificationUsecaseInput(),
+      );
+    } catch (_) {}
+  }
+
   @override
   void initState() {
     super.initState();
+    getFcmToken();
+    readyNotificationSystem();
     var initialzationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings =
@@ -69,24 +102,27 @@ class _MyAppState extends State<MyApp> {
       AndroidNotification? android = message.notification?.android;
       if (notification != null && android != null) {
         print('222');
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                //channel.description,
-                color: Colors.white.withOpacity(0),
-                // ignore: todo
-                // TODO add a proper drawable resource to android, for now using
-                //      one that already exists in example app.
-                icon: "@mipmap/ic_launcher",
-                enableVibration: true,
-              ),
-            ));
-
+        try {
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  //channel.description,
+                  color: Colors.white.withOpacity(0),
+                  // ignore: todo
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
+                  icon: "@mipmap/ic_launcher",
+                  enableVibration: true,
+                ),
+              ));
+        } catch (e) {
+          print(e);
+        }
         if (user != null) {
           var reference1 = FirebaseFirestore.instance
               .collection('TaousUser')
@@ -130,13 +166,19 @@ class _MyAppState extends State<MyApp> {
       }
     });
     print('111');
-    getToken();
+    getFcmToken();
   }
 
-  late String token;
-  getToken() async {
-    token = (await FirebaseMessaging.instance.getToken())!;
-    print(token);
+  Future<void> getFcmToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    var user = FirebaseAuth.instance.currentUser;
+
+    if (fcmToken != null && user != null) {
+      FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(user.uid.toString())
+          .set({'fcmToken': fcmToken}, SetOptions(merge: true));
+    }
   }
 
   @override

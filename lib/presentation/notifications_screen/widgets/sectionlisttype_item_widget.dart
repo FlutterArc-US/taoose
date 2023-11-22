@@ -15,63 +15,65 @@ class SectionlisttypeItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //print(data['timestamp'].millisecondsSinceEpoch.toString());
-    return Container(
-      margin: EdgeInsets.only(
-          //     left: 15.h,
-          //     //top: 13.v,
-          //     right: 17.h,
-          bottom: 7.v),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomImageView(
-              imagePath: ImageConstant.imgProfile,
-              height: 50.adaptSize,
-              width: 50.adaptSize,
-              radius: BorderRadius.circular(
-                25.h,
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 10.h,
-                  top: 7.v,
-                  bottom: 7.v,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      data['notification'][0],
+    return data['notification'][1] == null
+        ? const SizedBox()
+        : Container(
+            margin: EdgeInsets.only(
+                //     left: 15.h,
+                //     //top: 13.v,
+                //     right: 17.h,
+                bottom: 7.v),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CustomImageView(
+                    imagePath: ImageConstant.imgProfile,
+                    height: 50.adaptSize,
+                    width: 50.adaptSize,
+                    radius: BorderRadius.circular(
+                      25.h,
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: 10.h,
+                        top: 7.v,
+                        bottom: 7.v,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            data['notification'][0] ?? '',
 
-                      //overflow: TextOverflow.ellipsis,
-                      maxLines: null,
-                      textAlign: TextAlign.left,
-                      style: CustomTextStyles.titleSmallGray90002,
+                            //overflow: TextOverflow.ellipsis,
+                            maxLines: null,
+                            textAlign: TextAlign.left,
+                            style: CustomTextStyles.titleSmallGray90002,
+                          ),
+                          Text(
+                            data['notification'][1] ?? '',
+                            maxLines: null,
+                            textAlign: TextAlign.left,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      data['notification'][1],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5.0),
+                    child: Text(
+                      timeago.format(data['timestamp'].toDate()),
                       maxLines: null,
-                      textAlign: TextAlign.left,
-                      style: theme.textTheme.bodyMedium,
+                      textAlign: TextAlign.right,
+                      style: theme.textTheme.bodySmall,
                     ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 5.0),
-              child: Text(
-                timeago.format(data['timestamp'].toDate()),
-                maxLines: null,
-                textAlign: TextAlign.right,
-                style: theme.textTheme.bodySmall,
-              ),
-            ),
-          ]),
-    );
+                  ),
+                ]),
+          );
   }
 
   String readTimestamp(int timestamp) {

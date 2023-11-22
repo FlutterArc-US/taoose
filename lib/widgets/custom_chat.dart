@@ -209,6 +209,9 @@ class _CustomChatState extends State<CustomChat> {
                                                     snapshot) {
                                               final data = snapshot.data;
 
+                                              final messageType =
+                                                  firstData[0]['type'];
+
                                               final typingList =
                                                   data?['typing'];
                                               final isPeerUserTyping =
@@ -229,13 +232,18 @@ class _CustomChatState extends State<CustomChat> {
                                                               Ncontroller
                                                                       .getUid()
                                                                   .toString()
-                                                          ? firstData[0]
-                                                                  ['content']
-                                                              .toString()
-                                                          : "You: " +
-                                                              firstData[0][
+                                                          ? messageType == 1
+                                                              ? 'Photo'
+                                                              : firstData[0][
                                                                       'content']
-                                                                  .toString(),
+                                                                  .toString()
+                                                          : "You: " +
+                                                              (messageType == 1
+                                                                  ? 'Photo'
+                                                                  : firstData[0]
+                                                                          [
+                                                                          'content']
+                                                                      .toString()),
                                                       style: theme
                                                           .textTheme.bodyMedium,
                                                       overflow:
