@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:taousapp/core/constants/constants.dart';
 import 'package:taousapp/infrastructure/usecase.dart';
 import 'package:taousapp/infrastructure/usecase_input.dart';
 import 'package:taousapp/infrastructure/usecase_output.dart';
@@ -60,7 +61,7 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_FIREBASE_AUTHORIZATION_KEY',
+        'Authorization': 'Bearer $firebaseAuthorizationKey',
       },
       body: jsonEncode({
         'to': fcmToken,

@@ -43,10 +43,10 @@ class CommentsController extends GetxController {
 
     if (myUserId != postOwnerUserId) {
       final input = SendNotificationUsecaseInput(
-        userId: myUserId,
+        userId: postOwnerUserId,
         notification: PushNotification(
-          id: 1,
-          title: 'Someone comment on your post',
+          id: DateTime.now().millisecondsSinceEpoch,
+          title: 'New Comment',
           description: comment,
         ),
       );
@@ -93,10 +93,10 @@ class CommentsController extends GetxController {
       //TODO: Send Notification to other person
 
       final input = SendNotificationUsecaseInput(
-        userId: myUserId,
+        userId: commentOwnerId,
         notification: PushNotification(
-          id: 1,
-          title: 'Someone comment on your post',
+          id: DateTime.now().millisecondsSinceEpoch,
+          title: 'New Reply',
           description: comment,
         ),
       );

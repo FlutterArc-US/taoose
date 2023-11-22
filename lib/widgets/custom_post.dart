@@ -194,6 +194,7 @@ class CustomPost extends StatelessWidget {
                               () => liked.value == 1
                                   ? InkWell(
                                       onTap: () async {
+                                        //TODO: NOTIFICATION
                                         controller.posts[index]['likedBy']
                                             .remove(controller.hController
                                                 .getUid()

@@ -1,1 +1,2 @@
-
+const String firebaseAuthorizationKey = 'AAAAn7vT5IM'
+    ':APA91bG1UJN4JuojLq58la6HFNoBVXH2BwYl0nnxN3p8OeHPthaxh1sK_c4527Lo9TueVOFmgxDs1AVqfz-dBuythhSZZS0RpzCzyIIuca3zLQB5V_kPbpUgyZopNTPrbaqAJ5i9pNLi';
