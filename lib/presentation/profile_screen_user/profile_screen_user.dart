@@ -1,5 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
+import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/settings_screen/settings_screen.dart';
+import 'package:taousapp/util/di/di.dart';
 import 'package:taousapp/widgets/app_bar/appbar_image_1.dart';
 import 'package:taousapp/widgets/custom_elevated_button.dart';
 import 'package:taousapp/widgets/custom_icon_button.dart';
@@ -273,8 +277,7 @@ class ProfileScreenUser extends GetWidget<ProfileControllerUser> {
               Obx(
                 () => controller.locked.value == false &&
                         controller.following.value == true
-                    ? 
-                    Column(
+                    ? Column(
                         children: [
                           Padding(
                             padding: EdgeInsets.only(

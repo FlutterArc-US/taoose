@@ -18,6 +18,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'notifications/presentation/providers/enable_notification_setting_provider.dart';
 import 'notifications/presentation/providers/initialize_local_notification_provider.dart';
 
+var chatEnabled = false;
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
@@ -100,6 +101,11 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
+
+      if (chatEnabled) {
+        return;
+      }
+
       if (notification != null && android != null) {
         print('222');
         try {
