@@ -132,11 +132,12 @@ class CommentBox extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomImageView(
                     imagePath: ImageConstant.imgProfile,
-                    height: 20,
-                    width: 20,
+                    height: 25,
+                    width: 25,
                   ),
                   const SizedBox(width: 5),
                   Column(
@@ -287,12 +288,13 @@ class CommentBox extends StatelessWidget {
                                     return Column(
                                       children: [
                                         Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             CustomImageView(
                                               imagePath:
-                                                  ImageConstant.imgProfile,
-                                              height: 20,
-                                              width: 20,
+                                                  ImageConstant.imgAvatar,
+                                              height: 25,
+                                              width: 25,
                                             ),
                                             const SizedBox(width: 5),
                                             Column(
