@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
+import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/notifications_screen/models/notifications_model.dart';
+import 'package:taousapp/util/di/di.dart';
 
 import '../../home_screen/controller/home_controller.dart';
 
@@ -10,6 +13,7 @@ import '../../home_screen/controller/home_controller.dart';
 /// current notificationsModelObj
 class NotificationsController extends GetxController {
   Rx<NotificationsModel> notificationsModelObj = NotificationsModel().obs;
+  final sendNotificationUsecase = sl<SendNotificationUsecase>();
 
   // ignore: non_constant_identifier_names
   var Ncontroller = Get.find<HomeController>();
@@ -40,9 +44,23 @@ class NotificationsController extends GetxController {
       await query.doc(Ncontroller.getUid().toString()).update({
         'requests': FieldValue.arrayRemove([info['uid'].toString()]),
       });
+
+      if (Ncontroller.getUid() != info['uid']) {
+        //TODO: Send Notification to other person
+
+        final input = SendNotificationUsecaseInput(
+          userId: info['uid'],
+          notification: PushNotification(
+            id: DateTime.now().millisecondsSinceEpoch,
+            title: 'Accept Request',
+            description: '${Ncontroller.getName()} has accept your request',
+          ),
+        );
+
+        await sendNotificationUsecase(input);
+      }
       await getFollowRequests();
       await getRequests();
-      
     } catch (e) {
       print('Error: $e');
     }
@@ -65,8 +83,7 @@ class NotificationsController extends GetxController {
       var data = doc.data();
       requests.value = data?["requests"];
       print("======================" + data!['requests'].toString());
-      if(requests.length == 0)
-      {
+      if (requests.length == 0) {
         show.value = false;
       }
     }
