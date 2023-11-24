@@ -108,27 +108,26 @@ class _MyAppState extends State<MyApp> {
 
       if (notification != null && android != null) {
         print('222');
-        try {
-          flutterLocalNotificationsPlugin.show(
-              notification.hashCode,
-              notification.title,
-              notification.body,
-              NotificationDetails(
-                android: AndroidNotificationDetails(
-                  channel.id,
-                  channel.name,
-                  //channel.description,
-                  color: Colors.white.withOpacity(0),
-                  // ignore: todo
-                  // TODO add a proper drawable resource to android, for now using
-                  //      one that already exists in example app.
-                  icon: "@mipmap/ic_launcher",
-                  enableVibration: true,
-                ),
-              ));
-        } catch (e) {
-          print(e);
-        }
+
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              //channel.description,
+              color: Colors.white.withOpacity(0),
+              // ignore: todo
+              // TODO add a proper drawable resource to android, for now using
+              //      one that already exists in example app.
+              icon: "@mipmap/ic_launcher",
+              enableVibration: true,
+            ),
+          ),
+        );
+
         if (user != null) {
           var reference1 = FirebaseFirestore.instance
               .collection('TaousUser')

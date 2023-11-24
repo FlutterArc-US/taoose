@@ -78,7 +78,8 @@ class CustomSearch {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0),
+                  padding: const EdgeInsets.only(
+                      left: 15.0, right: 15.0, bottom: 15.0),
                   child: Row(
                     children: [
                       Icon(
@@ -107,9 +108,28 @@ class CustomSearch {
                                 return InkWell(
                                   child: CustomSearchWidget(
                                       users[index].data() as dynamic),
-                                  onTap: () => Get.toNamed(
-                                      AppRoutes.profileScreenUser,
-                                      arguments: users[index].data()),
+                                  onTap: () async {
+                                    final data = users[index].data();
+
+                                    if (data == null) {
+                                      return;
+                                    }
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    final userId = Map<String, dynamic>.from(
+                                        data as Map)['uid'];
+
+                                    if (hController.getUid() == userId) {
+                                      await Get.toNamed(
+                                          AppRoutes.profileScreen);
+                                    } else {
+                                      await Get.toNamed(
+                                          AppRoutes.profileScreenUser,
+                                          arguments: users[index].data());
+                                    }
+
+                                    Get.back();
+                                  },
                                 );
                               }),
                             );
@@ -126,7 +146,7 @@ class CustomSearch {
     String username;
     print(change.toString().replaceAll(RegExp('@'), ''));
     if (change.length > 0) {
-      if (change.toString().contains(RegExp('@')) && change.length>1) {
+      if (change.toString().contains(RegExp('@')) && change.length > 1) {
         username = change.toString().replaceAll(RegExp('@'), '');
         Query q = hController.firestoreInstance
             .where('UserName', isGreaterThanOrEqualTo: username)

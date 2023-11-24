@@ -12,4 +12,12 @@ class ProdcutDetailsOneController extends GetxController {
   var pController = Get.find<PostController>();
   Rx<ProdcutDetailsOneModel> prodcutDetailsOneModelObj =
       ProdcutDetailsOneModel().obs;
+
+  var type;
+
+  @override
+  void onInit() {
+    type = Get.arguments;
+    super.onInit();
+  }
 }
