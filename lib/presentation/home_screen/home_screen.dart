@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/main.dart';
 import 'package:taousapp/presentation/chat_screen/chat_screen.dart';
 import 'package:taousapp/presentation/chat_screen/controller/chat_controller.dart';
 import 'package:taousapp/presentation/frends_screen/controller/frends_controller.dart';
@@ -76,6 +77,12 @@ class HomeScreen extends GetWidget<HomeController> {
         ),
         bottomNavigationBar: CustomBottomBar(
           onChanged: (BottomBarEnum type) {
+            if (type == BottomBarEnum.Carprimarycontainer) {
+              chatEnabled = true;
+            } else {
+              chatEnabled = false;
+            }
+
             controller.type.value = type;
             //print(controller.pageController);
           },

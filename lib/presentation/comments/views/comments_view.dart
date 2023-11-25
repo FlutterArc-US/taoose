@@ -96,7 +96,8 @@ class CommentsView extends GetView<CommentsController> {
                   icon: Icon(Icons.send),
                 )
               ],
-            )
+            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -141,13 +142,15 @@ class CommentBox extends StatelessWidget {
                   ),
                   const SizedBox(width: 5),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 4,
                         ),
+                        constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.7),
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(15),
@@ -166,30 +169,35 @@ class CommentBox extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.symmetric(horizontal: 10),
-                      //   child: TimeAgoWidget(item.time),
-                      // ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: InkWell(
-                          onTap: () {
-                            controller.replyingTo.value = item.id;
-                            focus.requestFocus();
-                          },
-                          child: Obx(
-                            () => Text(
-                              'Reply',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: controller.replyingTo.value == item.id
-                                    ? Colors.blue
-                                    : Colors.grey[500],
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: TimeAgoWidget(item.time),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: InkWell(
+                              onTap: () {
+                                controller.replyingTo.value = item.id;
+                                focus.requestFocus();
+                              },
+                              child: Obx(
+                                () => Text(
+                                  'Reply',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        controller.replyingTo.value == item.id
+                                            ? Colors.blue
+                                            : Colors.grey[500],
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                     ],
@@ -289,66 +297,80 @@ class CommentBox extends StatelessWidget {
 
                                     final subByUser = subBy.data!;
 
-                                    return Column(
-                                      children: [
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            CustomImageView(
-                                              imagePath:
-                                                  ImageConstant.imgAvatar,
-                                              height: 25,
-                                              width: 25,
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 4,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey[300],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15),
-                                                  ),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        (subByUser['fullName']
-                                                                as String)
-                                                            .capitalizeFirst!,
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w600,
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 5),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              CustomImageView(
+                                                imagePath:
+                                                    ImageConstant.imgAvatar,
+                                                height: 25,
+                                                width: 25,
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 4,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.grey[300],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          (subByUser['fullName']
+                                                                  as String)
+                                                              .capitalizeFirst!,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(height: 2),
-                                                      Text(subComment.comment),
-                                                    ],
+                                                        const SizedBox(
+                                                            height: 2),
+                                                        Container(
+                                                          constraints: BoxConstraints(
+                                                              maxWidth: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.5),
+                                                          child: Text(subComment
+                                                              .comment),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                                // Padding(
-                                                //   padding: const EdgeInsets
-                                                //       .symmetric(
-                                                //       horizontal: 10),
-                                                //   child: TimeAgoWidget(
-                                                //       subComment.time),
-                                                // ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10),
+                                                    child: TimeAgoWidget(
+                                                        subComment.time),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   },
                                 ),
@@ -368,35 +390,35 @@ class CommentBox extends StatelessWidget {
   }
 }
 
-// class TimeAgoWidget extends StatefulWidget {
-//   final String formatedTime;
-//
-//   TimeAgoWidget(this.formatedTime);
-//
-//   @override
-//   State<TimeAgoWidget> createState() => _TimeAgoWidgetState();
-// }
-//
-// class _TimeAgoWidgetState extends State<TimeAgoWidget> {
-//   @override
-//   void initState() {
-//     super.initState();
-//     update();
-//   }
-//
-//   Future<void> update() async {
-//     await Future.delayed(const Duration(seconds: 10));
-//     if (mounted) {
-//       setState(() {});
-//       update();
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Text(
-//       timeago.format(DateTime.parse(widget.formatedTime)),
-//       style: TextStyle(color: Colors.grey[400], fontSize: 12),
-//     );
-//   }
-// }
+class TimeAgoWidget extends StatefulWidget {
+  final String formatedTime;
+
+  TimeAgoWidget(this.formatedTime);
+
+  @override
+  State<TimeAgoWidget> createState() => _TimeAgoWidgetState();
+}
+
+class _TimeAgoWidgetState extends State<TimeAgoWidget> {
+  @override
+  void initState() {
+    super.initState();
+    update();
+  }
+
+  Future<void> update() async {
+    await Future.delayed(const Duration(seconds: 10));
+    if (mounted) {
+      setState(() {});
+      update();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      timeago.format(DateTime.parse(widget.formatedTime)),
+      style: TextStyle(color: Colors.grey[400], fontSize: 10),
+    );
+  }
+}
