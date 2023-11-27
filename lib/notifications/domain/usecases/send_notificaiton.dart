@@ -9,6 +9,7 @@ import 'package:taousapp/infrastructure/usecase_output.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
+import 'package:taousapp/main.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
 
 class SendNotificationUsecaseInput extends Input {
@@ -49,6 +50,22 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
       return;
     }
     final data = document.data();
+
+    var reference1 =
+        FirebaseFirestore.instance.collection('TaousUser').doc(userId);
+
+    reference1.update({
+      'notifications': FieldValue.arrayUnion(
+        [
+          {
+            'id': channel.id,
+            'timestamp': DateTime.now(),
+            'notification': [notification.title, notification.description]
+          }
+        ],
+      )
+    });
+
     final fcmToken = data?['fcmToken'];
 
     if (fcmToken == null) {

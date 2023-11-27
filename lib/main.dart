@@ -128,26 +128,26 @@ class _MyAppState extends State<MyApp> {
           ),
         );
 
-        if (user != null) {
-          var reference1 = FirebaseFirestore.instance
-              .collection('TaousUser')
-              .doc(user.uid.toString());
-
-          var doc1 = await reference1.get();
-          if (doc1.exists) {
-            reference1.update({
-              'notifications': FieldValue.arrayUnion(
-                [
-                  {
-                    'id': channel.id,
-                    'timestamp': DateTime.now(),
-                    'notification': [notification.title, notification.body]
-                  }
-                ],
-              )
-            });
-          }
-        }
+        // if (user != null) {
+        //   var reference1 = FirebaseFirestore.instance
+        //       .collection('TaousUser')
+        //       .doc(user.uid.toString());
+        //
+        //   var doc1 = await reference1.get();
+        //   if (doc1.exists) {
+        //     reference1.update({
+        //       'notifications': FieldValue.arrayUnion(
+        //         [
+        //           {
+        //             'id': channel.id,
+        //             'timestamp': DateTime.now(),
+        //             'notification': [notification.title, notification.body]
+        //           }
+        //         ],
+        //       )
+        //     });
+        //   }
+        // }
       }
     });
 
@@ -227,22 +227,22 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         .doc(user.uid.toString());
 
     var doc1 = await reference1.get();
-    if (doc1.exists) {
-      reference1.update({
-        'notifications': FieldValue.arrayUnion(
-          [
-            {
-              'id': channel.id,
-              'timestamp': DateTime.now(),
-              'notification': [
-                message.notification?.title,
-                message.notification?.body
-              ]
-            }
-          ],
-        )
-      });
-    }
+    // if (doc1.exists) {
+    //   reference1.update({
+    //     'notifications': FieldValue.arrayUnion(
+    //       [
+    //         {
+    //           'id': channel.id,
+    //           'timestamp': DateTime.now(),
+    //           'notification': [
+    //             message.notification?.title,
+    //             message.notification?.body
+    //           ]
+    //         }
+    //       ],
+    //     )
+    //   });
+    // }
   }
   print('sdsdsdsdsdsdsds');
   print('Handling a background message ${message.notification?.body}');
