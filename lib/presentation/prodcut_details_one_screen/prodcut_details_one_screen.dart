@@ -40,6 +40,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
         notification: PushNotification(
           title: 'New liked',
           description: '$username has liked your post',
+          type: 'LikePost',
           id: DateTime.now().millisecondsSinceEpoch,
         ),
       );

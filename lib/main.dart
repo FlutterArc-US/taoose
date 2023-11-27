@@ -102,7 +102,7 @@ class _MyAppState extends State<MyApp> {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
-      if (chatEnabled) {
+      if (chatEnabled && message.data['type'] == 'message') {
         return;
       }
 

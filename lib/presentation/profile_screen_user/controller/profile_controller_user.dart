@@ -194,10 +194,10 @@ class ProfileControllerUser extends GetxController {
       final input = SendNotificationUsecaseInput(
         userId: followUserId,
         notification: PushNotification(
-          title: title,
-          description: description,
-          id: DateTime.now().millisecondsSinceEpoch,
-        ),
+            title: title,
+            description: description,
+            id: DateTime.now().millisecondsSinceEpoch,
+            type: 'Follow_Request'),
       );
 
       await sendNotificationUsecase(input);

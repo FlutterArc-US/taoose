@@ -52,6 +52,7 @@ class NotificationsController extends GetxController {
           userId: info['uid'],
           notification: PushNotification(
             id: DateTime.now().millisecondsSinceEpoch,
+            type: 'AcceptRequest',
             title: 'Accept Request',
             description: '${Ncontroller.getName()} has accept your request',
           ),

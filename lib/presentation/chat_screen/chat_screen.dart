@@ -110,8 +110,10 @@ class ChatScreen extends GetWidget<ChatController> {
                   stream: FirebaseFirestore.instance
                       .collection('messages')
                       .where('members', arrayContains: Ncontroller.getUid())
-
-                      //.limit(1)
+                      .orderBy(
+                        'timestamp',
+                        descending: false,
+                      )
                       .snapshots(),
                   builder: (context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
@@ -137,7 +139,9 @@ class ChatScreen extends GetWidget<ChatController> {
                             final id = data[index].id;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
-                              child: CustomChat(data[index].id),
+                              child: CustomChat(
+                                data[index].id,
+                              ),
                             );
                           },
                           reverse: true,

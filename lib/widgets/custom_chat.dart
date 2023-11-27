@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taousapp/core/app_export.dart';
@@ -47,7 +45,11 @@ class _CustomChatState extends State<CustomChat> {
     }
   }
 
-  var chat;
+  var previousChat;
+
+  var otherUserData;
+
+  var userFullName;
 
   @override
   void dispose() {
@@ -55,230 +57,282 @@ class _CustomChatState extends State<CustomChat> {
     _updateTypingStatus(isTyping: false);
   }
 
-  initData() async {
-    final doc2 = await firestoreInstance.doc(widget.chat.toString()).get();
-
-    final doc = await firestoreInstance
-        .doc(widget.chat.toString())
-        .collection(widget.chat.toString())
-        .orderBy('timestamp', descending: true)
-        .limit(1)
-        .get();
-
-    chat = doc.docs;
-
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    scheduleMicrotask(() {
-      initData();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 15.h, bottom: 5.v, top: 0.v, right: 15.h),
-      child: chat != null
-          ? InkWell(
-              onTap: () async {
-                if (chat[0]['idFrom'].toString() !=
-                    Ncontroller.getUid().toString()) {
-                  FirebaseFirestore.instance
-                      .collection('messages')
-                      .doc(widget.chat.toString())
-                      .collection(widget.chat.toString())
-                      .doc('counter')
-                      .set({'unread': 0});
-                }
+        padding:
+            EdgeInsets.only(left: 15.h, bottom: 5.v, top: 0.v, right: 15.h),
+        child: FutureBuilder<QuerySnapshot>(
+          future: firestoreInstance
+              .doc(widget.chat.toString())
+              .collection(widget.chat.toString())
+              .orderBy('timestamp', descending: true)
+              .limit(1)
+              .get(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              print("error");
+            }
 
-                final userDoc =
-                    chat[0]['idTo'] == Ncontroller.getUid().toString()
-                        ? await firestoreInstance2
-                            .doc(chat[0]['idFrom'].toString())
-                            .get()
-                        : await firestoreInstance2
-                            .doc(chat[0]['idTo'].toString())
-                            .get();
+            if (!snapshot.hasData) {
+              print("error");
+            }
 
-                if (userDoc.exists) {
-                  final userData = userDoc;
-                  if (mounted) {
-                    BottomChatWidget().chatModalBottomSheet(
-                      context,
-                      userData['fullName'].toString() ?? '',
-                      userData['UserName'].toString(),
-                      userData['uid'].toString(),
-                    );
-                  }
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomImageView(
-                    imagePath: ImageConstant.imgProfile,
-                    height: 48.adaptSize,
-                    width: 48.adaptSize,
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: 13.h,
-                        top: 3.v,
-                        bottom: 4.v,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: FutureBuilder<DocumentSnapshot>(
-                                    future: chat[0]['idTo'] ==
-                                            Ncontroller.getUid().toString()
-                                        ? firestoreInstance2
-                                            .doc(chat[0]['idFrom'].toString())
-                                            .get()
-                                        : firestoreInstance2
-                                            .doc(chat[0]['idTo'].toString())
-                                            .get(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<DocumentSnapshot>
-                                            snapshot) {
-                                      if (snapshot.hasError) {
-                                        print("error");
-                                      }
+            if (snapshot.hasData) {
+              previousChat = snapshot.data!.docs;
+            }
+            if (previousChat != null) {
+              try {
+                //print(firstData[0]['content'].toString() + 'ssssssssssss');
+                return FutureBuilder<DocumentSnapshot>(
+                  future:
+                      previousChat[0]['idTo'] == Ncontroller.getUid().toString()
+                          ? firestoreInstance2
+                              .doc(previousChat[0]['idFrom'].toString())
+                              .get()
+                          : firestoreInstance2
+                              .doc(previousChat[0]['idTo'].toString())
+                              .get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      print("error");
+                    }
 
-                                      if (snapshot.hasData &&
-                                          !snapshot.data!.exists) {
-                                        print("error");
-                                      }
+                    if (snapshot.hasData && !snapshot.data!.exists) {
+                      print("error");
+                    }
 
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.done) {
-                                        var thirdData = snapshot.data;
-                                        return Text(
-                                          thirdData!["fullName"].toString(),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 2,
-                                          style: theme.textTheme.titleSmall,
-                                        );
-                                      }
-
-                                      return Text("");
-                                    }),
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.data!.exists) {
+                      otherUserData = snapshot.data;
+                    }
+                    if (otherUserData != null) {
+                      return InkWell(
+                        onTap: () {
+                          if (previousChat[0]['idFrom'].toString() !=
+                              Ncontroller.getUid().toString()) {
+                            FirebaseFirestore.instance
+                                .collection('messages')
+                                .doc(widget.chat.toString())
+                                .collection(widget.chat.toString())
+                                .doc('counter')
+                                .set({'unread': 0});
+                          }
+                          BottomChatWidget().chatModalBottomSheet(
+                            context,
+                            otherUserData!['fullName'].toString(),
+                            otherUserData['UserName'].toString(),
+                            otherUserData['uid'].toString(),
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomImageView(
+                              imagePath: ImageConstant.imgProfile,
+                              height: 48.adaptSize,
+                              width: 48.adaptSize,
+                            ),
+                            Expanded(
+                                child: Padding(
+                              padding: EdgeInsets.only(
+                                left: 13.h,
+                                top: 3.v,
+                                bottom: 4.v,
                               ),
-                              //Spacer(),
-                              Padding(
-                                padding: EdgeInsets.only(top: 2.v),
-                                child: Text(
-                                  timeago.format(
-                                      DateTime.fromMillisecondsSinceEpoch(
-                                          int.parse(chat[0]['timestamp']))),
-                                  maxLines: null,
-                                  textAlign: TextAlign.right,
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 2.v),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: FutureBuilder<DocumentSnapshot>(
+                                            future: previousChat[0]['idTo'] ==
+                                                    Ncontroller.getUid()
+                                                        .toString()
+                                                ? firestoreInstance2
+                                                    .doc(previousChat[0]
+                                                            ['idFrom']
+                                                        .toString())
+                                                    .get()
+                                                : firestoreInstance2
+                                                    .doc(previousChat[0]['idTo']
+                                                        .toString())
+                                                    .get(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<DocumentSnapshot>
+                                                    snapshot) {
+                                              if (snapshot.hasError) {
+                                                print("error");
+                                              }
 
-                          /// [typing]
-                          Row(
-                            children: [
-                              Expanded(
-                                child: StreamBuilder<DocumentSnapshot>(
-                                  stream: firestoreInstance
-                                      .doc(widget.chat.toString())
-                                      .snapshots(),
-                                  builder: (context,
-                                      AsyncSnapshot<DocumentSnapshot>
-                                          snapshot) {
-                                    final data = snapshot.data;
+                                              if (snapshot.hasData &&
+                                                  !snapshot.data!.exists) {
+                                                print("error");
+                                              }
 
-                                    final messageType = chat[0]['type'];
+                                              if (snapshot.connectionState ==
+                                                      ConnectionState.done &&
+                                                  (snapshot.data?.exists ??
+                                                      false)) {
+                                                userFullName = snapshot.data;
+                                              }
 
-                                    final typingList = data?['typing'] ?? [];
-                                    final isPeerUserTyping =
-                                        List.from(typingList ?? []).any(
-                                            (element) =>
-                                                element !=
-                                                Ncontroller.getUid()
-                                                    .toString());
-                                    if (isPeerUserTyping) {
-                                      return const Text(
-                                        'typing...',
-                                        style: TextStyle(color: Colors.green),
-                                      );
-                                    } else {
-                                      return Text(
-                                        chat[0]['idFrom'].toString() !=
-                                                Ncontroller.getUid().toString()
-                                            ? messageType == 1
-                                                ? 'Photo'
-                                                : chat[0]['content'].toString()
-                                            : 'You: ${messageType == 1 ? 'Photo' : chat[0]['content'].toString()}',
-                                        style: theme.textTheme.bodyMedium,
-                                        overflow: TextOverflow.ellipsis,
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                              Spacer(),
-                              StreamBuilder<DocumentSnapshot>(
-                                stream: firestoreInstance
-                                    .doc(widget.chat.toString())
-                                    .collection(widget.chat.toString())
-                                    .doc('counter')
-                                    .snapshots(),
-                                builder: ((context,
-                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                  var data = snapshot.data;
-                                  //print(data?['unread'].toString());
-                                  if (data == null) {
-                                    return Container();
-                                  } else {
-                                    if (chat[0]['idFrom'].toString() !=
-                                            Ncontroller.getUid().toString() &&
-                                        data['unread'] > 0) {
-                                      return Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 6.h,
-                                          vertical: 1.v,
-                                        ),
-                                        decoration:
-                                            AppDecoration.fillPrimary.copyWith(
-                                          borderRadius:
-                                              BorderRadiusStyle.roundedBorder8,
-                                        ),
+                                              if (userFullName != null) {
+                                                var thirdData = snapshot.data;
+                                                return Text(
+                                                  userFullName!["fullName"]
+                                                      .toString(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 2,
+                                                  style: theme
+                                                      .textTheme.titleSmall,
+                                                );
+                                              }
+
+                                              return Text("");
+                                            }),
+                                      ),
+                                      //Spacer(),
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 2.v),
                                         child: Text(
-                                          data['unread'].toString(),
-                                          style: CustomTextStyles
-                                              .bodySmallPrimaryContainer12,
+                                          timeago.format(DateTime
+                                              .fromMillisecondsSinceEpoch(
+                                                  int.parse(previousChat[0]
+                                                      ['timestamp']))),
+                                          maxLines: null,
+                                          textAlign: TextAlign.right,
+                                          style: theme.textTheme.bodySmall,
                                         ),
-                                      );
-                                    } else {
-                                      return Container();
-                                    }
-                                  }
-                                }),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 2.v),
+
+                                  /// [typing]
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: StreamBuilder<DocumentSnapshot>(
+                                            stream: firestoreInstance
+                                                .doc(widget.chat.toString())
+                                                .snapshots(),
+                                            builder: (context,
+                                                AsyncSnapshot<DocumentSnapshot>
+                                                    snapshot) {
+                                              final data = snapshot.data;
+
+                                              final messageType =
+                                                  previousChat[0]['type'];
+
+                                              final typingList =
+                                                  data?['typing'];
+                                              final isPeerUserTyping =
+                                                  List.from(typingList ?? [])
+                                                      .any((element) =>
+                                                          element !=
+                                                          Ncontroller.getUid()
+                                                              .toString());
+                                              return isPeerUserTyping
+                                                  ? const Text(
+                                                      'typing...',
+                                                      style: TextStyle(
+                                                          color: Colors.green),
+                                                    )
+                                                  : Text(
+                                                      previousChat[0]['idFrom']
+                                                                  .toString() !=
+                                                              Ncontroller
+                                                                      .getUid()
+                                                                  .toString()
+                                                          ? messageType == 1
+                                                              ? 'Photo'
+                                                              : previousChat[0][
+                                                                      'content']
+                                                                  .toString()
+                                                          : "You: " +
+                                                              (messageType == 1
+                                                                  ? 'Photo'
+                                                                  : previousChat[
+                                                                              0]
+                                                                          [
+                                                                          'content']
+                                                                      .toString()),
+                                                      style: theme
+                                                          .textTheme.bodyMedium,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    );
+                                            }),
+                                      ),
+                                      Spacer(),
+                                      StreamBuilder<DocumentSnapshot>(
+                                          stream: firestoreInstance
+                                              .doc(widget.chat.toString())
+                                              .collection(
+                                                  widget.chat.toString())
+                                              .doc('counter')
+                                              .snapshots(),
+                                          builder: ((context,
+                                              AsyncSnapshot<DocumentSnapshot>
+                                                  snapshot) {
+                                            var data = snapshot.data;
+                                            //print(data?['unread'].toString());
+                                            if (data == null) {
+                                              return Container();
+                                            } else {
+                                              if (previousChat[0]['idFrom']
+                                                          .toString() !=
+                                                      Ncontroller.getUid()
+                                                          .toString() &&
+                                                  data['unread'] > 0) {
+                                                return Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 6.h,
+                                                    vertical: 1.v,
+                                                  ),
+                                                  decoration: AppDecoration
+                                                      .fillPrimary
+                                                      .copyWith(
+                                                    borderRadius:
+                                                        BorderRadiusStyle
+                                                            .roundedBorder8,
+                                                  ),
+                                                  child: Text(
+                                                    data['unread'].toString(),
+                                                    style: CustomTextStyles
+                                                        .bodySmallPrimaryContainer12,
+                                                  ),
+                                                );
+                                              } else {
+                                                return Container();
+                                              }
+                                            }
+                                          }))
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : Container(),
-    );
+                            )),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return Text("");
+                  },
+                );
+              } catch (e) {
+                return Container();
+              }
+            }
+
+            return Container();
+          },
+        ));
   }
 }

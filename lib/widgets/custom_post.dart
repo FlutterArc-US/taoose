@@ -37,6 +37,7 @@ class CustomPost extends StatelessWidget {
         notification: PushNotification(
           title: 'New liked',
           description: '$username has liked your post',
+          type: 'like_post',
           id: DateTime.now().millisecondsSinceEpoch,
         ),
       );

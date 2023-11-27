@@ -92,6 +92,7 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
           'id': notification.id,
           'status': 'done',
+          'type': notification.type
         },
         'priority': 'high',
       }),

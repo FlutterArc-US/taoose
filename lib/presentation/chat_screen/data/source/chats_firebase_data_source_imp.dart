@@ -69,7 +69,8 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
         .doc(input.chatId)
         .set(
       {
-        'members': [input.userid, input.peeruid]
+        'members': [input.userid, input.peeruid],
+        'timestamp': input.timestamp,
       },
       SetOptions(merge: true),
     );
@@ -105,6 +106,7 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
         userId: peerId,
         notification: PushNotification(
           title: 'New Message',
+          type: 'message',
           description: '$username has sent you message',
           id: DateTime.now().millisecondsSinceEpoch,
         ),

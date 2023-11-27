@@ -49,6 +49,7 @@ class CommentsController extends GetxController {
         notification: PushNotification(
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'New Comment',
+          type: 'comment',
           description: comment,
         ),
       );
@@ -99,6 +100,7 @@ class CommentsController extends GetxController {
         notification: PushNotification(
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'New Reply',
+          type: 'comment',
           description: comment,
         ),
       );
