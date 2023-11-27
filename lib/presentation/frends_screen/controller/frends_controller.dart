@@ -294,6 +294,5 @@ class FrendsController extends GetxController {
   @override
   void onClose() {
     super.onClose();
-    searchController.dispose();
   }
 }

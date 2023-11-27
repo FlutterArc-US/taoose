@@ -23,6 +23,7 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
       'idTo': input.peeruid,
       'timestamp': input.timestamp,
       'type': input.type,
+      'members': [input.userid, input.peeruid],
       "status": 1
     };
 
@@ -48,9 +49,10 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
       messageData['type'] = input.type;
     }
 
-    var ref =
-        FirebaseFirestore.instance.collection('messages').doc(input.chatId);
-    var documentReference = ref
+    print(input.chatId);
+    var documentReference = FirebaseFirestore.instance
+        .collection('messages')
+        .doc(input.chatId)
         .collection(input.chatId)
         .doc(DateTime.now().millisecondsSinceEpoch.toString());
 
@@ -61,6 +63,16 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
         documentReference,
         messageData,
       );
+
+    await FirebaseFirestore.instance
+        .collection('messages')
+        .doc(input.chatId)
+        .set(
+      {
+        'members': [input.userid, input.peeruid]
+      },
+      SetOptions(merge: true),
+    );
 
     // Commit the batch write
     await batch.commit().then((value) {
