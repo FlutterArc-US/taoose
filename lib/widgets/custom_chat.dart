@@ -230,7 +230,7 @@ class _CustomChatState extends State<CustomChat> {
                                                   previousChat[0]['type'];
 
                                               final typingList =
-                                                  data?['typing'];
+                                                  data?['typing'] ?? [];
                                               final isPeerUserTyping =
                                                   List.from(typingList ?? [])
                                                       .any((element) =>
@@ -289,7 +289,7 @@ class _CustomChatState extends State<CustomChat> {
                                                           .toString() !=
                                                       Ncontroller.getUid()
                                                           .toString() &&
-                                                  data['unread'] > 0) {
+                                                  (data?['unread'] ?? 0) > 0) {
                                                 return Container(
                                                   padding: EdgeInsets.symmetric(
                                                     horizontal: 6.h,

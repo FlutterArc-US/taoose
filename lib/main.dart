@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_codes/country_codes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,9 +16,6 @@ import 'package:taousapp/util/di/di.dart';
 
 import 'core/app_export.dart';
 import 'package:firebase_core/firebase_core.dart';
-
-import 'notifications/presentation/providers/enable_notification_setting_provider.dart';
-import 'notifications/presentation/providers/initialize_local_notification_provider.dart';
 
 var chatEnabled = false;
 Future main() async {
@@ -90,8 +89,14 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    getFcmToken();
-    readyNotificationSystem();
+    scheduleMicrotask(() {
+      initData();
+    });
+  }
+
+  Future<void> initData() async {
+    await getFcmToken();
+    await readyNotificationSystem();
     var initialzationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings =
@@ -102,6 +107,7 @@ class _MyAppState extends State<MyApp> {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
+      print(message.data);
       if (chatEnabled && message.data['type'] == 'message') {
         return;
       }
@@ -171,7 +177,6 @@ class _MyAppState extends State<MyApp> {
       }
     });
     print('111');
-    getFcmToken();
   }
 
   Future<void> getFcmToken() async {
