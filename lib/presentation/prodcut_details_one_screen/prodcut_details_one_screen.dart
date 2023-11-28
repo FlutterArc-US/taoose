@@ -40,6 +40,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
         notification: PushNotification(
           title: 'New liked',
           description: '$username has liked your post',
+          type: 'LikePost',
           id: DateTime.now().millisecondsSinceEpoch,
         ),
       );
@@ -51,23 +52,26 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
   @override
   Widget build(BuildContext context) {
     //var hController = Get.find<HomeController>();
-    var type = Get.arguments;
     RxInt liked = 0.obs;
     RxInt total = 0.obs;
-    if (type[1].containsKey('likedBy')) {
-      total.value = type[1]['likedBy'].length;
-    } else {
+    try {
+      if (controller.type[1].containsKey('likedBy')) {
+        total.value = controller.type[1]['likedBy'].length;
+      } else {
+        total.value = 0;
+      }
+
+      mediaQueryData = MediaQuery.of(context);
+      if (controller.type[1]['likedBy']
+          .contains(controller.hController.getUid().toString())) {
+        print('trueeeee');
+        liked.value = 1;
+      } else {
+        liked.value = 0;
+      }
+    } catch (e) {
       total.value = 0;
     }
-    mediaQueryData = MediaQuery.of(context);
-    if (type[1]['likedBy']
-        .contains(controller.hController.getUid().toString())) {
-      print('trueeeee');
-      liked.value = 1;
-    } else {
-      liked.value = 0;
-    }
-
     return Scaffold(
       backgroundColor: appTheme.whiteA700,
       appBar: CustomAppBar(
@@ -96,7 +100,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                   ),
                   Center(
                     child: AppbarSubtitle(
-                      text: type[0].toString(),
+                      text: controller.type[0].toString(),
                       margin: EdgeInsets.only(left: 95.h),
                     ),
                   ),
@@ -120,7 +124,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20.00)),
                   child: Image.network(
-                    type[1]['photoUrl'],
+                    controller.type[1]['photoUrl'],
                     fit: BoxFit.cover,
                     //height: 100.adaptSize,
                     //width: 100.adaptSize,
@@ -151,7 +155,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                   padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                   child: SizedBox(
                     child: Text(
-                      type[1]['cloths'],
+                      controller.type[1]['cloths'],
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: CustomTextStyles.bodyMediumGray700.copyWith(
@@ -170,13 +174,14 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                       () => liked.value == 1
                           ? CustomIconButton(
                               onTap: () async {
-                                type[1]['likedBy'].remove(
+                                controller.type[1]['likedBy'].remove(
                                     controller.hController.getUid().toString());
                                 await controller.pController.docFetch
-                                    .doc(type[1]['owner'].toString())
-                                    .collection(
-                                        type[1]['description'].toString())
-                                    .doc(type[1]['postId'])
+                                    .doc(controller.type[1]['owner'].toString())
+                                    .collection(controller.type[1]
+                                            ['description']
+                                        .toString())
+                                    .doc(controller.type[1]['postId'])
                                     .update({
                                   'likedBy': FieldValue.arrayRemove([
                                     controller.hController.getUid().toString()
@@ -198,13 +203,14 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                           : CustomIconButton(
                               onTap: () async {
                                 //TODO: NOTIFICATION
-                                type[1]['likedBy'].add(
+                                controller.type[1]['likedBy'].add(
                                     controller.hController.getUid().toString());
                                 await controller.pController.docFetch
-                                    .doc(type[1]['owner'].toString())
-                                    .collection(
-                                        type[1]['description'].toString())
-                                    .doc(type[1]['postId'])
+                                    .doc(controller.type[1]['owner'].toString())
+                                    .collection(controller.type[1]
+                                            ['description']
+                                        .toString())
+                                    .doc(controller.type[1]['postId'])
                                     .update({
                                   'likedBy': FieldValue.arrayUnion([
                                     controller.hController.getUid().toString()
@@ -214,7 +220,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                                 total.value = total.value + 1;
                                 controller.pController.posts.refresh();
                                 sendLikePostNotification(
-                                    postOwnerId: type[1]['owner']);
+                                    postOwnerId: controller.type[1]['owner']);
                                 //controller.posts.refresh();
                               },
                               height: 41.adaptSize,
@@ -243,7 +249,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                     InkWell(
                       onTap: () {
                         Get.toNamed(AppRoutes.commentsScreen,
-                            arguments: type[1]);
+                            arguments: controller.type[1]);
                       },
                       child: CustomIconButton(
                         decoration: IconButtonStyleHelper.fillGrayProfile,
@@ -263,7 +269,7 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
                         bottom: 11.v,
                       ),
                       child: Text(
-                        type[1]['comments'].toString().tr,
+                        controller.type[1]['comments'].toString().tr,
                         style: CustomTextStyles.bodySmallNetflixSansGray50003,
                       ),
                     ),

@@ -266,15 +266,22 @@ class BottomChatWidget {
                                       .doc(groupChatId)
                                       .snapshots(),
                                   builder: (context, value) {
-                                    final typingList = value.data?['typing'];
-                                    final isPeerUserTyping =
-                                        List.from(typingList ?? []).any(
-                                            (element) => element != userid);
-                                    if (isPeerUserTyping) {
-                                      return const Text(
-                                        'typing...',
-                                        style: TextStyle(color: Colors.green),
-                                      );
+                                    final typingUserList =
+                                        value.data?.data()?['typing'] ?? [];
+
+                                    if (typingUserList == null) {
+                                      return const SizedBox();
+                                    } else {
+                                      final typingList = typingUserList ?? [];
+                                      final isPeerUserTyping =
+                                          List.from(typingList ?? []).any(
+                                              (element) => element != userid);
+                                      if (isPeerUserTyping) {
+                                        return const Text(
+                                          'typing...',
+                                          style: TextStyle(color: Colors.green),
+                                        );
+                                      }
                                     }
 
                                     return StreamBuilder<

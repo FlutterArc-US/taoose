@@ -8,17 +8,18 @@ import 'package:taousapp/core/app_export.dart';
 
 // ignore_for_file: must_be_immutable
 class ChatScreen extends GetWidget<ChatController> {
-  const ChatScreen({Key? key})
+  ChatScreen({Key? key})
       : super(
           key: key,
         );
+  var Ncontroller = Get.find<HomeController>();
+  var listMessage;
+  List chats = [].obs;
 
   @override
   Widget build(BuildContext context) {
     // ignore: non_constant_identifier_names
-    var Ncontroller = Get.find<HomeController>();
-    var listMessage;
-    RxList chats = [].obs;
+    print(Ncontroller.getUid());
     return Scaffold(
       backgroundColor: appTheme.whiteA700,
       body: SizedBox(
@@ -105,11 +106,14 @@ class ChatScreen extends GetWidget<ChatController> {
                 ),
               ),
               Flexible(
-                child: StreamBuilder(
+                child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                   stream: FirebaseFirestore.instance
-                      .collection('TaousUser')
-                      .doc(Ncontroller.getUid())
-                      //.limit(1)
+                      .collection('messages')
+                      .where('members', arrayContains: Ncontroller.getUid())
+                      .orderBy(
+                        'timestamp',
+                        descending: false,
+                      )
                       .snapshots(),
                   builder: (context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
@@ -123,28 +127,36 @@ class ChatScreen extends GetWidget<ChatController> {
                     } else if (snapshot.data == null) {
                       return Text("noting to show");
                     } else {
-                      listMessage = snapshot.data;
+                      final data = snapshot.data.docs;
+
                       try {
-                        chats.value = listMessage['chats'];
                         // ignore: invalid_use_of_protected_member
-                        print (chats.value);
+                        print(chats);
                         return ListView.builder(
                           shrinkWrap: true,
                           //padding: EdgeInsets.all(10.0),
-                          itemBuilder: (context, index) =>
-                              Obx(() => Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: CustomChat(chats[index], controller.unread),
-                              )),
+                          itemBuilder: (context, index) {
+                            final id = data[index].id;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: CustomChat(
+                                data[index].id,
+                              ),
+                            );
+                          },
                           reverse: true,
                           // ignore: invalid_use_of_protected_member
-                          itemCount: chats.value.length,
+                          itemCount: data.length,
                           //controller: listScrollController,
                         );
                       } catch (e) {
                         return Padding(
                           padding: const EdgeInsets.only(top: 30.0),
-                          child: Center(child: Text("No conversations",style: theme.textTheme.bodySmall,)),
+                          child: Center(
+                              child: Text(
+                            "No conversations",
+                            style: theme.textTheme.bodySmall,
+                          )),
                         );
                       }
 
@@ -166,4 +178,3 @@ class ChatScreen extends GetWidget<ChatController> {
     );
   }
 }
-

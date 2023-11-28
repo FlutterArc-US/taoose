@@ -102,53 +102,52 @@ class _MyAppState extends State<MyApp> {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
-      if (chatEnabled) {
+      if (chatEnabled && message.data['type'] == 'message') {
         return;
       }
 
       if (notification != null && android != null) {
         print('222');
-        try {
-          flutterLocalNotificationsPlugin.show(
-              notification.hashCode,
-              notification.title,
-              notification.body,
-              NotificationDetails(
-                android: AndroidNotificationDetails(
-                  channel.id,
-                  channel.name,
-                  //channel.description,
-                  color: Colors.white.withOpacity(0),
-                  // ignore: todo
-                  // TODO add a proper drawable resource to android, for now using
-                  //      one that already exists in example app.
-                  icon: "@mipmap/ic_launcher",
-                  enableVibration: true,
-                ),
-              ));
-        } catch (e) {
-          print(e);
-        }
-        if (user != null) {
-          var reference1 = FirebaseFirestore.instance
-              .collection('TaousUser')
-              .doc(user.uid.toString());
 
-          var doc1 = await reference1.get();
-          if (doc1.exists) {
-            reference1.update({
-              'notifications': FieldValue.arrayUnion(
-                [
-                  {
-                    'id': channel.id,
-                    'timestamp': DateTime.now(),
-                    'notification': [notification.title, notification.body]
-                  }
-                ],
-              )
-            });
-          }
-        }
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              //channel.description,
+              color: Colors.white.withOpacity(0),
+              // ignore: todo
+              // TODO add a proper drawable resource to android, for now using
+              //      one that already exists in example app.
+              icon: "@mipmap/ic_launcher",
+              enableVibration: true,
+            ),
+          ),
+        );
+
+        // if (user != null) {
+        //   var reference1 = FirebaseFirestore.instance
+        //       .collection('TaousUser')
+        //       .doc(user.uid.toString());
+        //
+        //   var doc1 = await reference1.get();
+        //   if (doc1.exists) {
+        //     reference1.update({
+        //       'notifications': FieldValue.arrayUnion(
+        //         [
+        //           {
+        //             'id': channel.id,
+        //             'timestamp': DateTime.now(),
+        //             'notification': [notification.title, notification.body]
+        //           }
+        //         ],
+        //       )
+        //     });
+        //   }
+        // }
       }
     });
 
@@ -228,22 +227,22 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         .doc(user.uid.toString());
 
     var doc1 = await reference1.get();
-    if (doc1.exists) {
-      reference1.update({
-        'notifications': FieldValue.arrayUnion(
-          [
-            {
-              'id': channel.id,
-              'timestamp': DateTime.now(),
-              'notification': [
-                message.notification?.title,
-                message.notification?.body
-              ]
-            }
-          ],
-        )
-      });
-    }
+    // if (doc1.exists) {
+    //   reference1.update({
+    //     'notifications': FieldValue.arrayUnion(
+    //       [
+    //         {
+    //           'id': channel.id,
+    //           'timestamp': DateTime.now(),
+    //           'notification': [
+    //             message.notification?.title,
+    //             message.notification?.body
+    //           ]
+    //         }
+    //       ],
+    //     )
+    //   });
+    // }
   }
   print('sdsdsdsdsdsdsds');
   print('Handling a background message ${message.notification?.body}');

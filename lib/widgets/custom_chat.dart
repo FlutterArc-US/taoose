@@ -8,8 +8,7 @@ import 'package:timeago/timeago.dart' as timeago;
 // ignore: must_be_immutable
 class CustomChat extends StatefulWidget {
   var chat;
-  RxInt unread;
-  CustomChat(this.chat, this.unread);
+  CustomChat(this.chat);
 
   @override
   State<CustomChat> createState() => _CustomChatState();
@@ -46,6 +45,12 @@ class _CustomChatState extends State<CustomChat> {
     }
   }
 
+  var previousChat;
+
+  var otherUserData;
+
+  var userFullName;
+
   @override
   void dispose() {
     super.dispose();
@@ -73,18 +78,21 @@ class _CustomChatState extends State<CustomChat> {
             if (!snapshot.hasData) {
               print("error");
             }
-            if (snapshot.connectionState == ConnectionState.done) {
+
+            if (snapshot.hasData) {
+              previousChat = snapshot.data!.docs;
+            }
+            if (previousChat != null) {
               try {
-                var firstData = snapshot.data!.docs;
                 //print(firstData[0]['content'].toString() + 'ssssssssssss');
                 return FutureBuilder<DocumentSnapshot>(
                   future:
-                      firstData[0]['idTo'] == Ncontroller.getUid().toString()
+                      previousChat[0]['idTo'] == Ncontroller.getUid().toString()
                           ? firestoreInstance2
-                              .doc(firstData[0]['idFrom'].toString())
+                              .doc(previousChat[0]['idFrom'].toString())
                               .get()
                           : firestoreInstance2
-                              .doc(firstData[0]['idTo'].toString())
+                              .doc(previousChat[0]['idTo'].toString())
                               .get(),
                   builder: (BuildContext context,
                       AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -96,25 +104,27 @@ class _CustomChatState extends State<CustomChat> {
                       print("error");
                     }
 
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      var secondData = snapshot.data;
-
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.data!.exists) {
+                      otherUserData = snapshot.data;
+                    }
+                    if (otherUserData != null) {
                       return InkWell(
                         onTap: () {
-                          if (firstData[0]['idFrom'].toString() !=
+                          if (previousChat[0]['idFrom'].toString() !=
                               Ncontroller.getUid().toString()) {
                             FirebaseFirestore.instance
                                 .collection('messages')
                                 .doc(widget.chat.toString())
                                 .collection(widget.chat.toString())
                                 .doc('counter')
-                              ..set({'unread': 0});
+                                .set({'unread': 0});
                           }
                           BottomChatWidget().chatModalBottomSheet(
                             context,
-                            secondData!['fullName'].toString(),
-                            secondData['UserName'].toString(),
-                            secondData['uid'].toString(),
+                            otherUserData!['fullName'].toString(),
+                            otherUserData['UserName'].toString(),
+                            otherUserData['uid'].toString(),
                           );
                         },
                         child: Row(
@@ -139,15 +149,16 @@ class _CustomChatState extends State<CustomChat> {
                                     children: [
                                       Expanded(
                                         child: FutureBuilder<DocumentSnapshot>(
-                                            future: firstData[0]['idTo'] ==
+                                            future: previousChat[0]['idTo'] ==
                                                     Ncontroller.getUid()
                                                         .toString()
                                                 ? firestoreInstance2
-                                                    .doc(firstData[0]['idFrom']
+                                                    .doc(previousChat[0]
+                                                            ['idFrom']
                                                         .toString())
                                                     .get()
                                                 : firestoreInstance2
-                                                    .doc(firstData[0]['idTo']
+                                                    .doc(previousChat[0]['idTo']
                                                         .toString())
                                                     .get(),
                                             builder: (BuildContext context,
@@ -163,10 +174,16 @@ class _CustomChatState extends State<CustomChat> {
                                               }
 
                                               if (snapshot.connectionState ==
-                                                  ConnectionState.done) {
+                                                      ConnectionState.done &&
+                                                  (snapshot.data?.exists ??
+                                                      false)) {
+                                                userFullName = snapshot.data;
+                                              }
+
+                                              if (userFullName != null) {
                                                 var thirdData = snapshot.data;
                                                 return Text(
-                                                  thirdData!["fullName"]
+                                                  userFullName!["fullName"]
                                                       .toString(),
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -185,7 +202,7 @@ class _CustomChatState extends State<CustomChat> {
                                         child: Text(
                                           timeago.format(DateTime
                                               .fromMillisecondsSinceEpoch(
-                                                  int.parse(firstData[0]
+                                                  int.parse(previousChat[0]
                                                       ['timestamp']))),
                                           maxLines: null,
                                           textAlign: TextAlign.right,
@@ -210,7 +227,7 @@ class _CustomChatState extends State<CustomChat> {
                                               final data = snapshot.data;
 
                                               final messageType =
-                                                  firstData[0]['type'];
+                                                  previousChat[0]['type'];
 
                                               final typingList =
                                                   data?['typing'];
@@ -227,20 +244,21 @@ class _CustomChatState extends State<CustomChat> {
                                                           color: Colors.green),
                                                     )
                                                   : Text(
-                                                      firstData[0]['idFrom']
+                                                      previousChat[0]['idFrom']
                                                                   .toString() !=
                                                               Ncontroller
                                                                       .getUid()
                                                                   .toString()
                                                           ? messageType == 1
                                                               ? 'Photo'
-                                                              : firstData[0][
+                                                              : previousChat[0][
                                                                       'content']
                                                                   .toString()
                                                           : "You: " +
                                                               (messageType == 1
                                                                   ? 'Photo'
-                                                                  : firstData[0]
+                                                                  : previousChat[
+                                                                              0]
                                                                           [
                                                                           'content']
                                                                       .toString()),
@@ -267,7 +285,7 @@ class _CustomChatState extends State<CustomChat> {
                                             if (data == null) {
                                               return Container();
                                             } else {
-                                              if (firstData[0]['idFrom']
+                                              if (previousChat[0]['idFrom']
                                                           .toString() !=
                                                       Ncontroller.getUid()
                                                           .toString() &&
