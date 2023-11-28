@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:taousapp/presentation/chat_screen/models/chat_model.dart';
 import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
 import 'package:taousapp/widgets/custom_chat.dart';
 import 'controller/chat_controller.dart';
@@ -113,52 +114,55 @@ class ChatScreen extends GetWidget<ChatController> {
                     descending: true,
                   )
                   .snapshots(),
-              builder: (context, AsyncSnapshot snapshot) {
+              builder: (context,
+                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                 if (!snapshot.hasData) {
-                  //print(snapshot.data!.docs.toString());
                   return Center(
                     child: LoadingAnimationWidget.fourRotatingDots(
                       color: theme.colorScheme.primary,
                       size: 30,
                     ),
                   );
-                } else if (snapshot.data == null) {
-                  return Text("noting to show");
+                } else if (snapshot.data == null ||
+                    snapshot.data!.docs.isEmpty) {
+                  return const Text("Nothing to show");
                 } else {
-                  final data = snapshot.data.docs;
+                  final data = snapshot.data!.docs.map((doc) {
+                    final count =
+                        doc.data()['unReadMsgCountFor${Ncontroller.getUid()}'];
+
+                    return ChatModel.fromJson(doc.data())
+                        .copyWith(id: doc.id, unReadMsgCount: count);
+                  }).toList();
 
                   try {
-                    // ignore: invalid_use_of_protected_member
-                    print(chats);
+                    // Print the list of ChatModel instances
+                    print(data);
+
                     return Expanded(
                       child: ListView.builder(
-                        //padding: EdgeInsets.all(10.0),
                         itemBuilder: (context, index) {
-                          final id = data[index].id;
+                          var chat = data[index];
+
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
-                            child: CustomChat(
-                              data[index].id,
-                            ),
+                            child: CustomChat(chat: chat),
                           );
                         },
-                        // ignore: invalid_use_of_protected_member
                         itemCount: data.length,
-                        //controller: listScrollController,
                       ),
                     );
                   } catch (e) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 30.0),
                       child: Center(
-                          child: Text(
-                        "No conversations",
-                        style: theme.textTheme.bodySmall,
-                      )),
+                        child: Text(
+                          "No conversations",
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ),
                     );
                   }
-
-                  //print(chats[0].toString());
                 }
               },
             ),

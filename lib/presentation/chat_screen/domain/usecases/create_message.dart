@@ -19,7 +19,7 @@ abstract class CreateMessageUsecaseInput extends Input {
   final String userid;
   final String chatId;
   final String peeruid;
-  final String timestamp;
+  final int timestamp;
   final int type;
   final int status;
 }

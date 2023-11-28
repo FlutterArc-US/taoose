@@ -29,7 +29,6 @@ import 'package:taousapp/widgets/send_image_bubble.dart';
 
 // ignore: camel_case_types
 class BottomChatWidget {
-  RxString chatContent = ''.obs;
   RxBool sending = false.obs;
 
   Duration duration = const Duration(seconds: 1);
@@ -154,7 +153,7 @@ class BottomChatWidget {
               type: 1,
               chatId: groupChatId,
               status: 1,
-              timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
+              timestamp: DateTime.now().millisecondsSinceEpoch,
               images: images);
 
           await createMessageUsecase(input);
@@ -167,7 +166,7 @@ class BottomChatWidget {
             type: type,
             chatId: groupChatId,
             status: 1,
-            timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
+            timestamp: DateTime.now().millisecondsSinceEpoch,
             content: content,
           );
 
@@ -382,6 +381,12 @@ class BottomChatWidget {
                               ),
                             );
                           } else if (snapshot.hasData) {
+                            FirebaseFirestore.instance
+                                .collection('messages')
+                                .doc(groupChatId)
+                                .update({
+                              'unReadMsgCountFor$peeruid': 0,
+                            });
                             final listMessage = snapshot.data.docs;
                             return ListView.builder(
                               padding: const EdgeInsets.all(10.0),

@@ -14,14 +14,35 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
   final firestore = FirebaseFirestore.instance;
   final sendNotificationUsecase = sl<SendNotificationUsecase>();
 
+  Future<void> createChat({
+    required String chatId,
+    required List<String> members,
+  }) async {
+    await FirebaseFirestore.instance.collection('messages').doc(chatId).set(
+      {
+        'id': chatId,
+        'members': members,
+        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+      },
+      SetOptions(
+        merge: true,
+      ),
+    );
+  }
+
   @override
   Future<CreateMessageUsecaseOutput> createMessage(
     CreateMessageUsecaseInput input,
   ) async {
+    await createChat(
+      chatId: input.chatId,
+      members: [input.userid, input.peeruid],
+    );
+
     final messageData = <String, dynamic>{
       'idFrom': input.userid,
       'idTo': input.peeruid,
-      'timestamp': input.timestamp,
+      'timestamp': input.timestamp.toString(),
       'type': input.type,
       'members': [input.userid, input.peeruid],
       "status": 1
@@ -69,8 +90,14 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
         .doc(input.chatId)
         .set(
       {
-        'members': [input.userid, input.peeruid],
-        'timestamp': input.timestamp,
+        'timestamp': input.timestamp.toString(),
+        'message': {
+          'content':
+              input is CreateTextMessageUsecaseInput ? input.content : "",
+          'type': input.type,
+        },
+        'unReadMsgCountFor${input.userid}': FieldValue.increment(1),
+        'unReadMsgCountFor${input.peeruid}': FieldValue.increment(1),
       },
       SetOptions(merge: true),
     );

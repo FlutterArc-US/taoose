@@ -18,17 +18,18 @@ class ProfileController extends GetxController {
   RxList bottomPosts = [].obs;
   RxList shoePosts = [].obs;
   checkNewPosts() async {
-        getPosts();
-        getBottomPosts();
-        getShoePosts();
-    }
+    getPosts();
+    getBottomPosts();
+    getShoePosts();
+  }
 
   getBottomPosts() async {
     var reference = FirebaseFirestore.instance
         .collection("userPosts")
-        .doc(hController.getUid().toString()).collection('two');
-    var docsn = await reference.get();
-    bottomPosts.value = docsn.docs.map((doc) => doc.data()).toList();
+        .doc(hController.getUid().toString())
+        .collection('two');
+    var docs = await reference.get();
+    bottomPosts.value = docs.docs.map((doc) => doc.data()).toList();
     print(bottomPosts.value);
     return;
   }
@@ -36,7 +37,8 @@ class ProfileController extends GetxController {
   getShoePosts() async {
     var reference = FirebaseFirestore.instance
         .collection("userPosts")
-        .doc(hController.getUid().toString()).collection('three');
+        .doc(hController.getUid().toString())
+        .collection('three');
     var docsn = await reference.get();
     shoePosts.value = docsn.docs.map((doc) => doc.data()).toList();
     print(shoePosts.value);
@@ -46,7 +48,8 @@ class ProfileController extends GetxController {
   getPosts() async {
     var reference = FirebaseFirestore.instance
         .collection("userPosts")
-        .doc(hController.getUid().toString()).collection('one');
+        .doc(hController.getUid().toString())
+        .collection('one');
     var docsn = await reference.get();
     posts.value = docsn.docs.map((doc) => doc.data()).toList();
     print(posts.value);
