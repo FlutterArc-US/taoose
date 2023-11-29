@@ -5,7 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:taousapp/presentation/chat_screen/controller/messages_provider.dart';
 import 'package:taousapp/presentation/chat_screen/domain/usecases/create_message.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/get_all_messages.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/update_unread_messages_usecase.dart';
+import 'package:taousapp/presentation/chat_screen/models/message_model.dart';
 import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
 import 'package:taousapp/util/di/di.dart';
 
@@ -27,22 +31,23 @@ import 'package:taousapp/widgets/recieve_image_bubble.dart';
 import 'package:taousapp/widgets/send_bubble.dart';
 import 'package:taousapp/widgets/send_image_bubble.dart';
 
-class ConversationView extends StatefulWidget {
-  ConversationView(
-      {super.key,
-      required this.username,
-      required this.peeruid,
-      required this.fullname});
+class ConversationView extends ConsumerStatefulWidget {
+  ConversationView({
+    super.key,
+    required this.username,
+    required this.peeruid,
+    required this.fullname,
+  });
 
   final String username;
   final String peeruid;
   final String fullname;
 
   @override
-  State<ConversationView> createState() => _ConversationViewState();
+  ConsumerState<ConversationView> createState() => _ConversationViewState();
 }
 
-class _ConversationViewState extends State<ConversationView> {
+class _ConversationViewState extends ConsumerState<ConversationView> {
   RxBool sending = false.obs;
 
   Duration duration = const Duration(seconds: 1);
@@ -50,8 +55,10 @@ class _ConversationViewState extends State<ConversationView> {
   Timer? _typingTimer;
 
   TextEditingController messageController = TextEditingController();
+  StreamSubscription<List<MessageModel>>? messagesStreamSubscription;
 
   var hController = Get.find<HomeController>();
+  final scrollController = ScrollController();
 
   var userid;
 
@@ -91,69 +98,10 @@ class _ConversationViewState extends State<ConversationView> {
   /// [send message]
   Future<void> onSendMessage(String content, int type,
       {List<File>? images}) async {
-    //  chatContent.value = messageController.text;
-    FirebaseFirestore.instance
-        .collection('messages')
-        .doc(groupChatId)
-        .collection(groupChatId)
-        .doc('counter')
-        .get()
-        .then((doc) {
-      if (!doc.exists) {
-        FirebaseFirestore.instance
-            .collection('messages')
-            .doc(groupChatId)
-            .collection(groupChatId)
-            .doc('counter')
-            .set({'unread': 1}).catchError((_) {
-          if (kDebugMode) {
-            print("not successful!");
-          }
-        });
-      } else {
-        FirebaseFirestore.instance
-            .collection('messages')
-            .doc(groupChatId)
-            .collection(groupChatId)
-            .doc('counter')
-            .update({'unread': FieldValue.increment(1)});
-      }
-    });
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '' || images != null) {
       messageController.clear();
-      // var ref =
-      //     FirebaseFirestore.instance.collection('messages').doc(groupChatId);
-      // var documentReference = ref
-      //     .collection(groupChatId)
-      //     .doc(DateTime.now().millisecondsSinceEpoch.toString());
       sending.value = true;
-      await FirebaseFirestore.instance
-          .collection('TaousUser')
-          .doc(userid)
-          .update({
-        'chats': FieldValue.arrayRemove([groupChatId.toString()]),
-      }).then((value) => {
-                FirebaseFirestore.instance
-                    .collection('TaousUser')
-                    .doc(userid)
-                    .update({
-                  'chats': FieldValue.arrayUnion([groupChatId.toString()]),
-                })
-              });
-      await FirebaseFirestore.instance
-          .collection('TaousUser')
-          .doc(widget.peeruid)
-          .update({
-        'chats': FieldValue.arrayRemove([groupChatId.toString()]),
-      }).then((value) => {
-                FirebaseFirestore.instance
-                    .collection('TaousUser')
-                    .doc(widget.peeruid)
-                    .update({
-                  'chats': FieldValue.arrayUnion([groupChatId.toString()]),
-                })
-              });
 
       final createMessageUsecase = sl<CreateMessageUsecase>();
 
@@ -184,39 +132,60 @@ class _ConversationViewState extends State<ConversationView> {
         await createMessageUsecase(input);
       }
 
-      // FirebaseFirestore.instance.runTransaction((transaction) async {
-      //   transaction.set(
-      //     documentReference,
-      //     {
-      //       'idFrom': userid,
-      //       'idTo': peeruid,
-      //       'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-      //       'content': content,
-      //       'type': type,
-      //       "status": 1
-      //     },
-      //   );
-      // });
-      sending.value =
-          false; //listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+      sending.value = false;
     } else {
       Get.snackbar('Empty message', 'Nothing to send');
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
+  Future<void> getAllMessages() async {
+    final chatId = groupChatId;
+    final messagesUsecase = sl<GetAllMessagesUsecase>();
+    final updateUnreadMessagesUsecase = sl<MarkReadMessagesUsecase>();
+
+    final output = await messagesUsecase(
+      GetAllMessagesUsecaseInput(
+        chatId: chatId,
+        userId: userid,
+      ),
+    );
+
+    messagesStreamSubscription = output.messages.listen((messages) {
+      ref.read(messagesProvider.notifier).updateMessages(messages);
+      updateUnreadMessagesUsecase(
+        MarkReadMessagesUsecaseInput(
+          userId: userid,
+          chatId: chatId,
+        ),
+      );
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) =>
+            scrollController.jumpTo(scrollController.position.maxScrollExtent),
+      );
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     userid = hController.getUid();
     if (userid.hashCode <= widget.peeruid.hashCode) {
       groupChatId = '$userid-${widget.peeruid}';
     } else {
       groupChatId = '${widget.peeruid}-$userid';
     }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final messages = ref.watch(messagesProvider)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
@@ -386,12 +355,6 @@ class _ConversationViewState extends State<ConversationView> {
                           ),
                         );
                       } else if (snapshot.hasData) {
-                        FirebaseFirestore.instance
-                            .collection('messages')
-                            .doc(groupChatId)
-                            .update({
-                          'unReadMsgCountFor$userid': 0,
-                        });
                         final listMessage = snapshot.data.docs;
                         return ListView.builder(
                           padding: const EdgeInsets.all(10.0),

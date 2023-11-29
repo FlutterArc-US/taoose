@@ -1,10 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:injectable/injectable.dart';
+import 'package:taousapp/infrastructure/repository.dart';
+import 'package:taousapp/presentation/chat_screen/data/source/chat_firebase_datasource.dart';
+import 'package:taousapp/presentation/chat_screen/domain/repository/chat_repository.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/create_chat.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/create_message.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/delete_chat.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/delete_message.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/get_all_chats.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/get_all_messages.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/get_chat_id_for_users.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/update_unread_messages_usecase.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
 import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/chat_screen/data/source/chat_firebase_datasource.dart';
 import 'package:taousapp/presentation/chat_screen/domain/usecases/create_message.dart';
+import 'package:taousapp/presentation/chat_screen/models/chat_model.dart';
+import 'package:taousapp/presentation/chat_screen/models/message_model.dart';
 import 'package:taousapp/presentation/chat_screen/models/message_type.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taousapp/util/di/di.dart';
@@ -14,30 +28,34 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
   final firestore = FirebaseFirestore.instance;
   final sendNotificationUsecase = sl<SendNotificationUsecase>();
 
-  Future<void> createChat({
-    required String chatId,
-    required List<String> members,
-  }) async {
-    await FirebaseFirestore.instance.collection('messages').doc(chatId).set(
+  @override
+  Future<CreateChatUsecaseOutput> createChat(
+      CreateChatUsecaseInput input) async {
+    await FirebaseFirestore.instance
+        .collection('messages')
+        .doc(input.chatId)
+        .set(
       {
-        'id': chatId,
-        'members': members,
-        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+        'id': input.chatId,
+        'members': input.members,
+        'timestamp': input.time,
       },
       SetOptions(
         merge: true,
       ),
     );
+    return CreateChatUsecaseOutput(chatId: '');
   }
 
   @override
   Future<CreateMessageUsecaseOutput> createMessage(
     CreateMessageUsecaseInput input,
   ) async {
-    await createChat(
+    await createChat(CreateChatUsecaseInput(
       chatId: input.chatId,
       members: [input.userid, input.peeruid],
-    );
+      time: DateTime.now().microsecondsSinceEpoch,
+    ));
 
     final messageData = <String, dynamic>{
       'idFrom': input.userid,
@@ -90,7 +108,7 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
         .doc(input.chatId)
         .set(
       {
-        'timestamp': input.timestamp.toString(),
+        'timestamp': input.timestamp,
         'message': {
           'content':
               input is CreateTextMessageUsecaseInput ? input.content : "",
@@ -141,5 +159,99 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
 
       await sendNotificationUsecase(input);
     }
+  }
+
+  @override
+  Future<DeleteChatUsecaseOutput> deleteChat(
+    DeleteChatUsecaseInput input,
+  ) async {
+    throw UnimplementedError();
+    // final data = {
+    //   'availableFor': FieldValue.arrayRemove([input.userId]),
+    // };
+    //
+    // await firestore.collection(_chats).doc(input.chatId).update(data);
+    // return DeleteChatUsecaseOutput();
+  }
+
+  @override
+  Future<GetAllChatsUsecaseOutput> getAllChats(
+    GetAllChatsUsecaseInput input,
+  ) async {
+    final chats = FirebaseFirestore.instance
+        .collection('messages')
+        .where('members', arrayContains: input.userId)
+        .orderBy('timestamp', descending: true)
+        .withConverter(
+          fromFirestore: (snapshot, _) {
+            final data = snapshot.data();
+
+            final unReadMessageCount =
+                data!['unReadMsgCountFor${input.userId}'];
+
+            return ChatModel.fromJson(snapshot.data()!)
+                .copyWith(unReadMsgCount: unReadMessageCount);
+          },
+          toFirestore: (chat, _) => {},
+        );
+
+    final snapshots = chats.snapshots().map(
+          (querySnapshot) =>
+              querySnapshot.docs.map((doc) => doc.data()).toList(),
+        );
+    return GetAllChatsUsecaseOutput(chats: snapshots);
+  }
+
+  @override
+  Future<GetAllMessagesUsecaseOutput> getAllMessages(
+    GetAllMessagesUsecaseInput input,
+  ) async {
+    final messages = FirebaseFirestore.instance
+        .collection('messages')
+        .doc(input.chatId)
+        .collection(input.chatId)
+        .orderBy('timestamp', descending: true)
+        .withConverter(
+          fromFirestore: (snapshot, _) {
+            final data = snapshot.data()!;
+            data.putIfAbsent('id', () => snapshot.id);
+            return MessageModel.fromJson(data);
+          },
+          toFirestore: (message, _) => {},
+        );
+
+    final snapshots = messages.snapshots().map(
+          (querySnapshot) =>
+              querySnapshot.docs.map((doc) => doc.data()).toList(),
+        );
+
+    return GetAllMessagesUsecaseOutput(messages: snapshots);
+  }
+
+  @override
+  Future<GetChatIdForUsersUsecaseOutput> getChatIdForUsers(
+    GetChatIdForUsersUsecaseInput input,
+  ) async {
+    // final id = getChatId(input.members);
+
+    return GetChatIdForUsersUsecaseOutput(chatId: '');
+  }
+
+  @override
+  Future<MarkReadMessagesUsecaseOutput> updateUnReadMessages(
+    MarkReadMessagesUsecaseInput input,
+  ) async {
+    FirebaseFirestore.instance.collection('messages').doc(input.chatId).update({
+      'unReadMsgCountFor${input.userId}': 0,
+    });
+
+    return MarkReadMessagesUsecaseOutput();
+  }
+
+  @override
+  Future<DeleteMessageUsecaseOutput> deleteMessage(
+      DeleteMessageUsecaseInput input) {
+    // TODO: implement deleteMessage
+    throw UnimplementedError();
   }
 }
