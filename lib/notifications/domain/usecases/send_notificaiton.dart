@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:taousapp/core/constants/constants.dart';
 import 'package:taousapp/infrastructure/usecase.dart';
@@ -60,15 +59,19 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
           {
             'id': channel.id,
             'timestamp': DateTime.now(),
-            'notification': [notification.title, notification.description]
+            'notification': [
+              notification.title,
+              notification.description,
+            ]
           }
         ],
       )
     });
 
-    final fcmToken = data?['fcmToken'];
+    final fcmTokens =
+        List<String>.from(data?['fcmTokens'] as List<dynamic>? ?? []);
 
-    if (fcmToken == null) {
+    if (fcmTokens.isEmpty) {
       return;
     }
 
@@ -81,7 +84,7 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
         'Authorization': 'Bearer $firebaseAuthorizationKey',
       },
       body: jsonEncode({
-        'to': fcmToken,
+        'registration_ids': fcmTokens,
         'notification': {
           'title': notification.title,
           'body': notification.description,

@@ -109,7 +109,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       FirebaseFirestore.instance
           .collection('TaousUser')
           .doc(user.uid.toString())
-          .set({'fcmToken': fcmToken}, SetOptions(merge: true));
+          .set({
+        'fcmTokens': FieldValue.arrayUnion([fcmToken]),
+      }, SetOptions(merge: true));
     }
   }
 

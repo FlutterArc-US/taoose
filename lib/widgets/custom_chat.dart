@@ -207,12 +207,16 @@ class _CustomChatState extends ConsumerState<CustomChat> {
                                       element !=
                                       Ncontroller.getUid().toString());
                               return isPeerUserTyping
-                                  ? const Text(
+                                  ? Text(
                                       'typing...',
-                                      style: TextStyle(color: Colors.green),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                              color: Colors.green,
+                                              decorationColor: Colors.green),
+                                      overflow: TextOverflow.ellipsis,
                                     )
                                   : Text(
-                                      (widget.chat.message?['type'] ?? 0) == 1
+                                      widget.chat.message?['type'] == 1
                                           ? 'Photo'
                                           : widget.chat.message?['content']
                                                   .toString() ??

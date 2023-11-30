@@ -187,7 +187,9 @@ class _MyAppState extends State<MyApp> {
       FirebaseFirestore.instance
           .collection('TaousUser')
           .doc(user.uid.toString())
-          .set({'fcmToken': fcmToken}, SetOptions(merge: true));
+          .set({
+        'fcmTokens': FieldValue.arrayUnion([fcmToken])
+      }, SetOptions(merge: true));
     }
   }
 
