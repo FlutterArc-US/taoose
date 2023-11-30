@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_codes/country_codes.dart';
@@ -141,27 +142,6 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         );
-
-        // if (user != null) {
-        //   var reference1 = FirebaseFirestore.instance
-        //       .collection('TaousUser')
-        //       .doc(user.uid.toString());
-        //
-        //   var doc1 = await reference1.get();
-        //   if (doc1.exists) {
-        //     reference1.update({
-        //       'notifications': FieldValue.arrayUnion(
-        //         [
-        //           {
-        //             'id': channel.id,
-        //             'timestamp': DateTime.now(),
-        //             'notification': [notification.title, notification.body]
-        //           }
-        //         ],
-        //       )
-        //     });
-        //   }
-        // }
       }
     });
 
@@ -231,34 +211,47 @@ class _MyAppState extends State<MyApp> {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  configureDependencies();
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
+
+  // Initialize MaterialLocalizations in the context to avoid the error
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Add a MaterialApp widget to provide MaterialLocalizations
+  runApp(
+    ProviderScope(
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData().copyWith(
+            dividerColor: Colors.transparent,
+            colorScheme: ThemeData(
+                    colorScheme: ColorScheme.fromSwatch()
+                        .copyWith(secondary: ColorConstant.teal200))
+                .colorScheme
+                .copyWith(primary: ColorConstant.teal200)),
+        translations: AppLocalization(),
+        locale: Get.deviceLocale, //for setting localization strings
+        fallbackLocale: Locale('en', 'US'),
+        title: 'taousapp',
+        initialBinding: InitialBindings(),
+        initialRoute: AppRoutes.notificationsScreen,
+        getPages: AppRoutes.pages,
+        builder: ((context, child) {
+          return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: child!);
+        }),
+      ),
+    ),
+  );
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-  var user = FirebaseAuth.instance.currentUser;
 
-  if (user != null) {
-    var reference1 = FirebaseFirestore.instance
-        .collection('TaousUser')
-        .doc(user.uid.toString());
-
-    var doc1 = await reference1.get();
-    // if (doc1.exists) {
-    //   reference1.update({
-    //     'notifications': FieldValue.arrayUnion(
-    //       [
-    //         {
-    //           'id': channel.id,
-    //           'timestamp': DateTime.now(),
-    //           'notification': [
-    //             message.notification?.title,
-    //             message.notification?.body
-    //           ]
-    //         }
-    //       ],
-    //     )
-    //   });
-    // }
-  }
   print('sdsdsdsdsdsdsds');
   print('Handling a background message ${message.notification?.body}');
 }

@@ -102,24 +102,21 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
       ..set(
         documentReference,
         messageData,
-      );
-
-    await FirebaseFirestore.instance
-        .collection('messages')
-        .doc(input.chatId)
-        .set(
-      {
-        'timestamp': input.timestamp,
-        'message': {
-          'content':
-              input is CreateTextMessageUsecaseInput ? input.content : "",
-          'type': input.type,
+      )
+      ..set(
+        FirebaseFirestore.instance.collection('messages').doc(input.chatId),
+        {
+          'timestamp': input.timestamp,
+          'message': {
+            'content':
+                input is CreateTextMessageUsecaseInput ? input.content : "",
+            'type': input.type,
+          },
+          'unReadMsgCountFor${input.userid}': 0,
+          'unReadMsgCountFor${input.peeruid}': FieldValue.increment(1),
         },
-        'unReadMsgCountFor${input.userid}': FieldValue.increment(1),
-        'unReadMsgCountFor${input.peeruid}': FieldValue.increment(1),
-      },
-      SetOptions(merge: true),
-    );
+        SetOptions(merge: true),
+      );
 
     // Commit the batch write
     await batch.commit().then((value) {
