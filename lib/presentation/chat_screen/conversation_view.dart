@@ -158,10 +158,10 @@ class _ConversationViewState extends ConsumerState<ConversationView> {
           chatId: chatId,
         ),
       );
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) =>
-            scrollController.jumpTo(scrollController.position.maxScrollExtent),
-      );
+      // WidgetsBinding.instance.addPostFrameCallback(
+      //   (_) =>
+      //       scrollController.jumpTo(scrollController.position.maxScrollExtent),
+      // );
     });
   }
 
@@ -174,18 +174,20 @@ class _ConversationViewState extends ConsumerState<ConversationView> {
       groupChatId = '${widget.peeruid}-$userid';
     }
     super.initState();
+
+    scheduleMicrotask(() {
+      getAllMessages();
+    });
   }
 
   @override
   void dispose() {
-    scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final messages = ref.watch(messagesProvider)
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    final messages = ref.watch(messagesProvider);
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
@@ -337,60 +339,29 @@ class _ConversationViewState extends ConsumerState<ConversationView> {
                   //width: MediaQuery.of(context).size.width,
                   //height: 450,
 
-                  child: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('messages')
-                        .doc(groupChatId)
-                        .collection(groupChatId)
-                        .orderBy('timestamp', descending: true)
-                        //.limit(1)
-                        .snapshots(),
-                    builder: (context, AsyncSnapshot snapshot) {
-                      if (!snapshot.hasData) {
-                        //print(snapshot.data!.docs.toString());
-                        return Center(
-                          child: LoadingAnimationWidget.fourRotatingDots(
-                            color: theme.colorScheme.primary,
-                            size: 30,
-                          ),
-                        );
-                      } else if (snapshot.hasData) {
-                        final listMessage = snapshot.data.docs;
-                        return ListView.builder(
-                          padding: const EdgeInsets.all(10.0),
-                          itemCount: snapshot.data.docs.length,
-                          itemBuilder: (context, index) {
-                            if (listMessage[index]['idFrom'] == userid) {
-                              if (listMessage[index]['type'] ==
-                                  MessageType.text.id) {
-                                return SendBubble(
-                                    index, snapshot.data.docs[index]);
-                              } else if (listMessage[index]['type'] ==
-                                  MessageType.image.id) {
-                                return SendImageBubble(
-                                    index, listMessage[index]);
-                              }
-                              return const SizedBox();
-                            } else {
-                              if (listMessage[index]['type'] ==
-                                  MessageType.text.id) {
-                                return RecieveBubble(
-                                    index, snapshot.data.docs[index]);
-                              } else if (listMessage[index]['type'] ==
-                                  MessageType.image.id) {
-                                return RecieveImageBubble(
-                                    index, snapshot.data.docs[index]);
-                              }
-                              return const SizedBox();
-                            }
-                          },
-                          reverse: true,
-                          //  controller: listScrollController,
-                        );
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(10.0),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      if (message.idFrom == userid) {
+                        if (message.type == MessageType.text.id) {
+                          return SendBubble(index, message);
+                        } else if (message.type == MessageType.image.id) {
+                          return SendImageBubble(index, message);
+                        }
+                        return const SizedBox();
                       } else {
-                        return Container();
+                        if (message.type == MessageType.text.id) {
+                          return RecieveBubble(index, message);
+                        } else if (message.type == MessageType.image.id) {
+                          return RecieveImageBubble(index, message);
+                        }
+                        return const SizedBox();
                       }
                     },
+                    reverse: true,
+                    //  controller: listScrollController,
                   ),
                 ),
                 Obx(

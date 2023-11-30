@@ -2,14 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/presentation/chat_screen/models/message_model.dart';
 import 'package:taousapp/presentation/chat_screen/models/message_type.dart';
 import 'package:taousapp/widgets/show_images_dialog.dart';
 
 // ignore: must_be_immutable
 class RecieveImageBubble extends StatefulWidget {
   int indexR;
-  var docR;
-  RecieveImageBubble(this.indexR, this.docR, {Key? key}) : super(key: key);
+  final MessageModel message;
+  RecieveImageBubble(this.indexR, this.message, {Key? key}) : super(key: key);
 
   @override
   State<RecieveImageBubble> createState() => _RecieveImageBubbleState();
@@ -27,14 +28,14 @@ class _RecieveImageBubbleState extends State<RecieveImageBubble> {
   @override
   Widget build(BuildContext context) {
     var time = DateTime.fromMillisecondsSinceEpoch(
-        int.parse(widget.docR['timestamp']));
+        int.parse(widget.message.timestamp));
     var convertedTime = DateFormat.jm().format(DateTime.parse(time.toString()));
     print(
-        DateTime.fromMillisecondsSinceEpoch(int.parse(widget.docR['timestamp']))
+        DateTime.fromMillisecondsSinceEpoch(int.parse(widget.message.timestamp))
             .hour);
 
-    if (widget.docR['type'] == MessageType.image.id) {
-      final images = List<String>.from(widget.docR['imageUrls']);
+    if (widget.message.type == MessageType.image.id) {
+      final images = List<String>.from(widget.message.imageUrls ?? []);
 
       return Column(
         children: List<String>.from(images ?? [])

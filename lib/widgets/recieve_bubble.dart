@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/presentation/chat_screen/models/message_model.dart';
 
 // ignore: must_be_immutable
 class RecieveBubble extends StatelessWidget {
   int indexR;
-  var docR;
-  RecieveBubble(this.indexR, this.docR, {Key? key}) : super(key: key);
+  final MessageModel message;
+  RecieveBubble(this.indexR, this.message, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var time =
-        DateTime.fromMillisecondsSinceEpoch(int.parse(docR['timestamp']));
+        DateTime.fromMillisecondsSinceEpoch(int.parse(message.timestamp));
     var convertedTime = DateFormat.jm().format(DateTime.parse(time.toString()));
     print(
-        DateTime.fromMillisecondsSinceEpoch(int.parse(docR['timestamp'])).hour);
+        DateTime.fromMillisecondsSinceEpoch(int.parse(message.timestamp)).hour);
     return Column(
       children: [
         Container(
@@ -34,7 +35,7 @@ class RecieveBubble extends StatelessWidget {
           child: SizedBox(
             width: 213.h,
             child: Text(
-              docR['content'].toString(),
+              message.content ?? '',
               maxLines: 1000,
               overflow: TextOverflow.ellipsis,
               style: CustomTextStyles.bodyMedium14.copyWith(

@@ -9,6 +9,8 @@ class MessageModel {
     required this.idFrom,
     required this.status,
     required this.type,
+    this.content,
+    this.imageUrls,
   });
 
   factory MessageModel.fromJson(Map<String, Object?> json) {
@@ -20,18 +22,18 @@ class MessageModel {
       idFrom: json['idFrom'] as String,
       status: json['status'] as int,
       type: json['type'] as int,
+      content: json['content'] as String?,
+      imageUrls: List.from(json['imageUrls'] as List<dynamic>? ?? []),
     );
   }
 
   final String id;
-
   final String idFrom;
-
+  final List<String>? imageUrls;
   final String idTo;
   final List<String> members;
-
   final int status;
-
+  final String? content;
   final String timestamp;
   final int type;
 }

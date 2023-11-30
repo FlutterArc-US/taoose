@@ -8,19 +8,23 @@ class ChatModel {
     this.unReadMsgCount,
     this.message,
     this.user,
+    this.typing,
   });
 
   factory ChatModel.fromJson(Map<String, Object?> json) {
     return ChatModel(
       id: (json['id'] ?? "") as String,
       members: List<String>.from(json['members'] as List<dynamic>),
-      timestamp: json['timestamp']! as String,
+      timestamp: (json['timestamp']!).toString(),
       message: json['message'] as Map<String, dynamic>?,
+      typing: List<String>.from((json?['members'] as List<dynamic>?) ?? []),
     );
   }
 
   final String id;
   final List<String> members;
+  final List<String>? typing;
+
   final String timestamp;
   final int? unReadMsgCount;
   final Map<String, dynamic>? message;

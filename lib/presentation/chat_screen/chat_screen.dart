@@ -36,7 +36,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
 
     chatStreamSubscription = output.chats.listen((messages) {
-      ref.read(chatsProvider.notifier).updateChats(messages);
+      ref
+          .read(chatsProvider.notifier)
+          .updateChats(messages, Ncontroller.getUid());
     });
   }
 
