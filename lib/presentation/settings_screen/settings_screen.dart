@@ -31,9 +31,12 @@ class SettingsScreen extends GetWidget<SettingsController> {
       await FirebaseFirestore.instance
           .collection('TaousUser')
           .doc(user.uid.toString())
-          .set({
-        'fcmTokens': FieldValue.arrayRemove([fcmToken])
-      });
+          .set(
+        {
+          'fcmTokens': FieldValue.arrayRemove([fcmToken])
+        },
+        SetOptions(merge: true),
+      );
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
 import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/notifications_screen/models/notifications_model.dart';
@@ -49,10 +50,10 @@ class NotificationsController extends GetxController {
         //TODO: Send Notification to other person
 
         final input = SendNotificationUsecaseInput(
-          userId: info['uid'],
+          toUserId: info['uid'],
           notification: PushNotification(
             id: DateTime.now().millisecondsSinceEpoch,
-            type: 'AcceptRequest',
+            type: NotificationType.acceptRequest.name,
             title: 'Accept Request',
             description: '${Ncontroller.getName()} has accept your request',
           ),

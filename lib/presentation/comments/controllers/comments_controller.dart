@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
 import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/post_screen/models/comment_model.dart';
@@ -45,11 +46,11 @@ class CommentsController extends GetxController {
 
     if (myUserId != postOwnerUserId) {
       final input = SendNotificationUsecaseInput(
-        userId: postOwnerUserId,
+        toUserId: postOwnerUserId,
         notification: PushNotification(
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'New Comment',
-          type: 'comment',
+          type: NotificationType.comment.name,
           description: comment,
         ),
       );
@@ -96,11 +97,11 @@ class CommentsController extends GetxController {
       //TODO: Send Notification to other person
 
       final input = SendNotificationUsecaseInput(
-        userId: commentOwnerId,
+        toUserId: commentOwnerId,
         notification: PushNotification(
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'New Reply',
-          type: 'comment',
+          type: NotificationType.comment.name,
           description: comment,
         ),
       );
@@ -183,7 +184,7 @@ class CommentsController extends GetxController {
       final data = document.data();
       final username = data?['fullName'];
       final input = SendNotificationUsecaseInput(
-        userId: commentOwnerId,
+        toUserId: commentOwnerId,
         notification: PushNotification(
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'Like Comment',
@@ -258,7 +259,7 @@ class CommentsController extends GetxController {
       final data = document.data();
       final username = data?['fullName'];
       final input = SendNotificationUsecaseInput(
-        userId: commentOwnerId,
+        toUserId: commentOwnerId,
         notification: PushNotification(
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'Like Comment',

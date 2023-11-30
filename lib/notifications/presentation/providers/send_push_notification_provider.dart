@@ -12,7 +12,7 @@ final sendPushNotificationProvider = FutureProvider.family
 
   if (token != null) {
     final input = SendNotificationUsecaseInput(
-      userId: token,
+      toUserId: token,
       notification: notification,
     );
     await sendNotificationUsecase(input);

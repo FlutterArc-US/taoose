@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
 import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/frends_screen/controller/frends_controller.dart';
@@ -48,7 +49,8 @@ class ProfileControllerUser extends GetxController {
     if (kDebugMode) {
       print('checking');
     }
-    if (dataa?['followers'].contains(hController.getUid().toString())) {
+    if (dataa?['followers']?.contains(hController.getUid().toString()) ??
+        false) {
       if (kDebugMode) {
         print('following this account');
       }
@@ -76,6 +78,7 @@ class ProfileControllerUser extends GetxController {
         sendNotificationToUser(
           followUserId: uid['uid'],
           title: 'Follow Request',
+          type: NotificationType.followRequest.name,
           description: '${hController.getName()} has requested to follow you',
         );
       } else {
@@ -102,6 +105,7 @@ class ProfileControllerUser extends GetxController {
         sendNotificationToUser(
           followUserId: uid['uid'],
           title: 'UnFollow',
+          type: NotificationType.unFollow.name,
           description: '${hController.getName()} has unfollow you',
         );
       });
@@ -123,6 +127,7 @@ class ProfileControllerUser extends GetxController {
 
       sendNotificationToUser(
           followUserId: uid['uid'],
+          type: NotificationType.rejectRequest.name,
           title: "Reject Request",
           description: '${hController.getName()} has reject your request');
     } catch (e) {
@@ -176,28 +181,20 @@ class ProfileControllerUser extends GetxController {
   Future<void> sendNotificationToUser({
     required String followUserId,
     required String title,
+    required String type,
     required String description,
   }) async {
     final currentUserId = hController.getUid();
 
     if (currentUserId != followUserId) {
-      final document = await FirebaseFirestore.instance
-          .collection('TaousUser')
-          .doc(currentUserId)
-          .get();
-      if (!document.exists) {
-        return;
-      }
-      final data = document.data();
-      final username = data?['fullName'];
-
       final input = SendNotificationUsecaseInput(
-        userId: followUserId,
+        toUserId: followUserId,
         notification: PushNotification(
-            title: title,
-            description: description,
-            id: DateTime.now().millisecondsSinceEpoch,
-            type: 'Follow_Request'),
+          title: title,
+          description: description,
+          id: DateTime.now().millisecondsSinceEpoch,
+          type: type,
+        ),
       );
 
       await sendNotificationUsecase(input);

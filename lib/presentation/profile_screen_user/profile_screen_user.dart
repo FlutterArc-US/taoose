@@ -131,7 +131,7 @@ class ProfileScreenUser extends GetWidget<ProfileControllerUser> {
                     child: Column(
                       children: [
                         Text(
-                          data['following'].length.toString(),
+                          data?['following'].length.toString() ?? 0.toString(),
                           style: CustomTextStyles
                               .titleMediumAirbnbCerealAppOnPrimary,
                         ),

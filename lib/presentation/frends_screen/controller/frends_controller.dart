@@ -212,8 +212,8 @@ class FrendsController extends GetxController {
     var doc = await reference.get();
     if (doc.exists) {
       var data = doc.data();
-      followers.value = await data?["followers"];
-      following.value = await data?['following'];
+      followers.value = await data?["followers"] ?? [];
+      following.value = await data?['following'] ?? [];
     }
     return;
   }

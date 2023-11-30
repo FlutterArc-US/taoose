@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taousapp/infrastructure/repository.dart';
+import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
 import 'package:taousapp/presentation/chat_screen/data/source/chat_firebase_datasource.dart';
 import 'package:taousapp/presentation/chat_screen/domain/repository/chat_repository.dart';
 import 'package:taousapp/presentation/chat_screen/domain/usecases/create_chat.dart';
@@ -148,10 +149,10 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
       final username = data?['fullName'];
 
       final input = SendNotificationUsecaseInput(
-        userId: peerId,
+        toUserId: peerId,
         notification: PushNotification(
           title: 'New Message',
-          type: 'message',
+          type: NotificationType.newMessage.name,
           description: '$username has sent you message',
           id: DateTime.now().millisecondsSinceEpoch,
         ),

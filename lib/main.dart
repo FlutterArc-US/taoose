@@ -101,7 +101,15 @@ class _MyAppState extends State<MyApp> {
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings =
         InitializationSettings(android: initialzationSettingsAndroid);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) {
+        Get.toNamed(
+          AppRoutes.notificationsScreen,
+        );
+      },
+    );
     var user = FirebaseAuth.instance.currentUser;
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
