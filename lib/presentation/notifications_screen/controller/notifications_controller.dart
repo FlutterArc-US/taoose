@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
@@ -17,7 +18,7 @@ class NotificationsController extends GetxController {
   final sendNotificationUsecase = sl<SendNotificationUsecase>();
 
   // ignore: non_constant_identifier_names
-  var Ncontroller = Get.find<HomeController>();
+  var Ncontroller = FirebaseAuth.instance.currentUser;
   RxBool show = false.obs;
   RxList notifications = [].obs;
   RxList requests = [].obs;
@@ -25,7 +26,7 @@ class NotificationsController extends GetxController {
   var query = FirebaseFirestore.instance.collection("TaousUser");
 
   checkNewNotification() async {
-    DocumentReference ref = query.doc(Ncontroller.getUid().toString());
+    DocumentReference ref = query.doc(Ncontroller?.uid.toString());
     var refdoc = await ref.get();
     if (refdoc.exists) {
       ref.snapshots().listen((event) {
@@ -36,18 +37,23 @@ class NotificationsController extends GetxController {
 
   acceptFollow(info) async {
     try {
-      await query.doc(Ncontroller.getUid().toString()).update({
+      await query.doc(Ncontroller?.uid.toString()).update({
         'followers': FieldValue.arrayUnion([info['uid'].toString()]),
       });
       await query.doc(info['uid'].toString()).update({
-        'following': FieldValue.arrayUnion([Ncontroller.getUid().toString()]),
+        'following': FieldValue.arrayUnion([Ncontroller?.uid.toString()]),
       });
-      await query.doc(Ncontroller.getUid().toString()).update({
+      await query.doc(Ncontroller?.uid.toString()).update({
         'requests': FieldValue.arrayRemove([info['uid'].toString()]),
       });
 
-      if (Ncontroller.getUid() != info['uid']) {
+      if (Ncontroller?.uid != info['uid']) {
         //TODO: Send Notification to other person
+
+        final currentUser = await FirebaseFirestore.instance
+            .collection('TaousUser')
+            .doc(Ncontroller?.uid.toString())
+            .get();
 
         final input = SendNotificationUsecaseInput(
           toUserId: info['uid'],
@@ -55,7 +61,8 @@ class NotificationsController extends GetxController {
             id: DateTime.now().millisecondsSinceEpoch,
             type: NotificationType.acceptRequest.name,
             title: 'Accept Request',
-            description: '${Ncontroller.getName()} has accept your request',
+            description: '${currentUser.data()?['UserName']} has accept your '
+                'request',
           ),
         );
 
@@ -69,7 +76,7 @@ class NotificationsController extends GetxController {
   }
 
   getNotifications() async {
-    var reference = query.doc(Ncontroller.getUid().toString());
+    var reference = query.doc(Ncontroller?.uid.toString());
     var doc = await reference.get();
     if (doc.exists) {
       var data = doc.data();
@@ -79,11 +86,11 @@ class NotificationsController extends GetxController {
   }
 
   getFollowRequests() async {
-    var reference = query.doc(Ncontroller.getUid().toString());
+    var reference = query.doc(Ncontroller?.uid.toString());
     var doc = await reference.get();
     if (doc.exists) {
       var data = doc.data();
-      requests.value = data?["requests"];
+      requests.value = data?["requests"] ?? [];
       print("======================" + data!['requests'].toString());
       if (requests.length == 0) {
         show.value = false;

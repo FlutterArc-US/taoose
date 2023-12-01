@@ -56,7 +56,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     await firestoreInstance
         .doc(getUid().toString())
         .get()
-        .then((ge) => gender.value = ge['Geneder'].toString());
+        .then((ge) => gender.value = ge?['Geneder'].toString() ?? '');
   }
 
   void getBirthday() async {
