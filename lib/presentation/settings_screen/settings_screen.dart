@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:taousapp/core/constants/color_constant.dart';
 import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
@@ -19,6 +21,24 @@ class SettingsScreen extends GetWidget<SettingsController> {
         );
   final HomeController searchcontroller = Get.put(HomeController());
   FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> removeFcmToken() async {
+    var user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+
+      await FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(user.uid.toString())
+          .set(
+        {
+          'fcmTokens': FieldValue.arrayRemove([fcmToken])
+        },
+        SetOptions(merge: true),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -336,7 +356,7 @@ class SettingsScreen extends GetWidget<SettingsController> {
                       ),
                       onTap: () async {
                         try {
-                          // showLoaderDialog(context);
+                          await removeFcmToken();
                           await _auth.signOut();
                           Get.offNamedUntil(
                               AppRoutes.logInScreen, (route) => false);

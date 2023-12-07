@@ -78,7 +78,8 @@ class LogInScreen extends GetWidget<LogInController> {
                     ),
                     validator: (email) =>
                         signUpTabContainerController.validateEmail(email),
-                    contentPadding: EdgeInsets.only(right: 26.h), inputFormatters: [],
+                    contentPadding: EdgeInsets.only(right: 26.h),
+                    inputFormatters: [],
                   ),
                   Obx(
                     () => CustomTextFormField(
@@ -90,7 +91,6 @@ class LogInScreen extends GetWidget<LogInController> {
                       ),
                       hintText: "lbl_password".tr,
                       hintStyle: CustomTextStyles.bodyMediumGray900,
-                      textInputAction: TextInputAction.none,
                       textInputType: TextInputType.visiblePassword,
                       prefix: Container(
                         margin: EdgeInsets.only(
@@ -129,7 +129,8 @@ class LogInScreen extends GetWidget<LogInController> {
                       suffixConstraints: BoxConstraints(
                         maxHeight: 31.v,
                       ),
-                      obscureText: controller.isShowPassword.value, inputFormatters: [],
+                      obscureText: controller.isShowPassword.value,
+                      inputFormatters: [],
                     ),
                   ),
                   Padding(

@@ -2,14 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/presentation/chat_screen/models/message_model.dart';
 import 'package:taousapp/presentation/chat_screen/models/message_type.dart';
 import 'package:taousapp/widgets/show_images_dialog.dart';
 
 // ignore: must_be_immutable
 class SendImageBubble extends StatefulWidget {
   int indexR;
-  var docR;
-  SendImageBubble(this.indexR, this.docR, {Key? key}) : super(key: key);
+  final MessageModel message;
+  SendImageBubble(this.indexR, this.message, {Key? key}) : super(key: key);
 
   @override
   State<SendImageBubble> createState() => _SendImageBubbleState();
@@ -27,11 +28,11 @@ class _SendImageBubbleState extends State<SendImageBubble> {
   @override
   Widget build(BuildContext context) {
     var time = DateTime.fromMillisecondsSinceEpoch(
-        int.parse(widget.docR['timestamp']));
+        int.parse(widget.message.timestamp));
     var convertedTime = DateFormat.jm().format(DateTime.parse(time.toString()));
 
-    if (widget.docR['type'] == MessageType.image.id) {
-      final images = List<String>.from(widget.docR['imageUrls']);
+    if (widget.message.type == MessageType.image.id) {
+      final images = List<String>.from(widget.message.imageUrls ?? []);
       return Column(
         children: List<String>.from(images ?? [])
             .map(

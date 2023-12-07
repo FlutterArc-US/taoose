@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/presentation/home_screen/models/home_model.dart';
@@ -55,7 +56,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     await firestoreInstance
         .doc(getUid().toString())
         .get()
-        .then((ge) => gender.value = ge['Geneder'].toString());
+        .then((ge) => gender.value = ge?['Geneder'].toString() ?? '');
   }
 
   void getBirthday() async {
@@ -100,10 +101,25 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Rx<BottomBarEnum> type = BottomBarEnum.Home.obs;
   Rx<HomeModel> homeModelObj = HomeModel().obs;
 
+  Future<void> getFcmToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    var user = FirebaseAuth.instance.currentUser;
+
+    if (fcmToken != null && user != null) {
+      FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(user.uid.toString())
+          .set({
+        'fcmTokens': FieldValue.arrayUnion([fcmToken]),
+      }, SetOptions(merge: true));
+    }
+  }
+
   @override
   Future<void> onInit() async {
     super.onInit();
     getUserName();
+    getFcmToken();
     getGender();
     getBirthday();
     WidgetsBinding.instance.addObserver(this);

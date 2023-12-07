@@ -118,6 +118,34 @@ class CommentBox extends StatelessWidget {
   final textEditingController = TextEditingController();
   final focus = FocusNode();
 
+  Future<void> likeUnlikeSubComment(CommentModel subComment) async {
+    final isLiked = subComment.likedBy?.any(
+            (element) => element == homeController.auth.currentUser!.uid) ??
+        false;
+
+    if (!isLiked) {
+      controller.likeSubComment(
+        postId: data['postId'],
+        commentId: item.id,
+        myUserId: homeController.auth.currentUser!.uid,
+        category: data['description'],
+        postOwnerId: data['owner'],
+        commentOwnerId: subComment.commentedBy,
+        subCommentId: subComment.id,
+      );
+    } else {
+      controller.unLikeSubComment(
+        postId: data['postId'],
+        commentId: item.id,
+        myUserId: homeController.auth.currentUser!.uid,
+        category: data['description'],
+        postOwnerId: data['owner'],
+        commentOwnerId: subComment.commentedBy,
+        subCommentId: subComment.id,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -174,6 +202,54 @@ class CommentBox extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: TimeAgoWidget(item.time),
+                          ),
+
+                          /// [Like comment]
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: InkWell(
+                              onTap: () {
+                                final isLiked = item.likedBy?.any((element) =>
+                                        element ==
+                                        homeController.auth.currentUser!.uid) ??
+                                    false;
+
+                                if (!isLiked) {
+                                  controller.likeComment(
+                                    postId: data['postId'],
+                                    commentId: item.id,
+                                    myUserId:
+                                        homeController.auth.currentUser!.uid,
+                                    category: data['description'],
+                                    postOwnerUserId: data['owner'],
+                                    commentOwnerId: item.commentedBy,
+                                  );
+                                } else {
+                                  controller.unLikeComment(
+                                    postId: data['postId'],
+                                    commentId: item.id,
+                                    myUserId:
+                                        homeController.auth.currentUser!.uid,
+                                    category: data['description'],
+                                    postOwnerUserId: data['owner'],
+                                    commentOwnerId: item.commentedBy,
+                                  );
+                                }
+                              },
+                              child: Text(
+                                'Like',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: item.likedBy?.any((element) =>
+                                                element ==
+                                                homeController
+                                                    .auth.currentUser!.uid) ??
+                                            false
+                                        ? Colors.blue
+                                        : Colors.grey[500]),
+                              ),
+                            ),
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -362,8 +438,41 @@ class CommentBox extends StatelessWidget {
                                                     padding: const EdgeInsets
                                                         .symmetric(
                                                         horizontal: 10),
-                                                    child: TimeAgoWidget(
-                                                        subComment.time),
+                                                    child: Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        /// [Like unlike sub
+                                                        /// comment]
+                                                        InkWell(
+                                                          onTap: () =>
+                                                              likeUnlikeSubComment(
+                                                                  subComment),
+                                                          child: Text(
+                                                            'Like',
+                                                            style: TextStyle(
+                                                                fontSize: 11,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: subComment.likedBy?.any((element) =>
+                                                                            element ==
+                                                                            homeController
+                                                                                .auth.currentUser!.uid) ??
+                                                                        false
+                                                                    ? Colors
+                                                                        .blue
+                                                                    : Colors.grey[
+                                                                        500]),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 5),
+                                                        TimeAgoWidget(
+                                                            subComment.time),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),

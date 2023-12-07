@@ -1,13 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
-import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
+import 'package:taousapp/presentation/chat_screen/conversation_view.dart';
 import 'package:taousapp/presentation/settings_screen/settings_screen.dart';
-import 'package:taousapp/util/di/di.dart';
 import 'package:taousapp/widgets/app_bar/appbar_image_1.dart';
 import 'package:taousapp/widgets/custom_elevated_button.dart';
 import 'package:taousapp/widgets/custom_icon_button.dart';
-import 'package:taousapp/widgets/bottomChatWidget.dart';
 import 'package:taousapp/widgets/custom_outlined_button.dart';
 import 'controller/profile_controller_user.dart';
 import 'package:flutter/material.dart';
@@ -135,7 +131,7 @@ class ProfileScreenUser extends GetWidget<ProfileControllerUser> {
                     child: Column(
                       children: [
                         Text(
-                          data['following'].length.toString(),
+                          data?['following'].length.toString() ?? 0.toString(),
                           style: CustomTextStyles
                               .titleMediumAirbnbCerealAppOnPrimary,
                         ),
@@ -252,13 +248,30 @@ class ProfileScreenUser extends GetWidget<ProfileControllerUser> {
                           ),
                     controller.following.value == true
                         ? CustomIconButton(
-                            onTap: () => {
-                              BottomChatWidget().chatModalBottomSheet(
-                                context,
-                                data['fullName'].toString(),
-                                data['UserName'].toString(),
-                                data['uid'].toString(),
-                              )
+                            onTap: () {
+                              showModalBottomSheet(
+                                  isDismissible: true,
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.white,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(35.0),
+                                      topRight: Radius.circular(35.0),
+                                    ),
+                                  ),
+                                  builder: (context) {
+                                    return ConversationView(
+                                        username: data['UserName'].toString(),
+                                        peeruid: data['uid'].toString(),
+                                        fullname: data['fullName'].toString());
+                                  });
+                              // BottomChatWidget().chatModalBottomSheet(
+                              //   context,
+                              //   data['fullName'].toString(),
+                              //   data['UserName'].toString(),
+                              //   data['uid'].toString(),
+                              // );
                             },
                             height: 50.v,
                             width: 50.h,

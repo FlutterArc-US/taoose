@@ -14,11 +14,11 @@ import 'package:taousapp/notifications/domain/models/notification/push_notificat
 
 class SendNotificationUsecaseInput extends Input {
   SendNotificationUsecaseInput({
-    required this.userId,
+    required this.toUserId,
     required this.notification,
   });
 
-  final String userId;
+  final String toUserId;
   final PushNotification notification;
 }
 
@@ -35,15 +35,15 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
   Future<SendNotificationUsecaseOutput> call(
     SendNotificationUsecaseInput input,
   ) async {
-    await sendFCMNotification(input.userId, input.notification);
+    await sendFCMNotification(input.toUserId, input.notification);
     return SendNotificationUsecaseOutput();
   }
 
   Future<void> sendFCMNotification(
-      String userId, PushNotification notification) async {
+      String toUserId, PushNotification notification) async {
     final document = await FirebaseFirestore.instance
         .collection('TaousUser')
-        .doc(userId)
+        .doc(toUserId)
         .get();
 
     if (!document.exists) {
@@ -51,8 +51,10 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
     }
     final data = document.data();
 
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     var reference1 =
-        FirebaseFirestore.instance.collection('TaousUser').doc(userId);
+        FirebaseFirestore.instance.collection('TaousUser').doc(toUserId);
 
     reference1.update({
       'notifications': FieldValue.arrayUnion(
@@ -60,15 +62,21 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
           {
             'id': channel.id,
             'timestamp': DateTime.now(),
-            'notification': [notification.title, notification.description]
+            'type': notification.type,
+            'userId': currentUser?.uid.toString(),
+            'notification': [
+              notification.title,
+              notification.description,
+            ]
           }
         ],
       )
     });
 
-    final fcmToken = data?['fcmToken'];
+    final fcmTokens =
+        List<String>.from(data?['fcmTokens'] as List<dynamic>? ?? []);
 
-    if (fcmToken == null) {
+    if (fcmTokens.isEmpty) {
       return;
     }
 
@@ -81,7 +89,7 @@ class SendNotificationUsecase extends Usecase<SendNotificationUsecaseInput,
         'Authorization': 'Bearer $firebaseAuthorizationKey',
       },
       body: jsonEncode({
-        'to': fcmToken,
+        'registration_ids': fcmTokens,
         'notification': {
           'title': notification.title,
           'body': notification.description,

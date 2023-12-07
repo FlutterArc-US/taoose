@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
 import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
@@ -36,11 +37,11 @@ class ProdcutDetailsOneScreen extends GetWidget<ProdcutDetailsOneController> {
       final username = data?['fullName'];
 
       final input = SendNotificationUsecaseInput(
-        userId: postOwnerId,
+        toUserId: postOwnerId,
         notification: PushNotification(
           title: 'New liked',
           description: '$username has liked your post',
-          type: 'LikePost',
+          type: NotificationType.likePost.name,
           id: DateTime.now().millisecondsSinceEpoch,
         ),
       );

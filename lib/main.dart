@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_codes/country_codes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,10 +18,28 @@ import 'package:taousapp/util/di/di.dart';
 import 'core/app_export.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'notifications/presentation/providers/enable_notification_setting_provider.dart';
-import 'notifications/presentation/providers/initialize_local_notification_provider.dart';
+import 'presentation/notifications_screen/notifications_screen.dart';
 
 var chatEnabled = false;
+
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel',
+  'High Importance Notifications',
+  importance: Importance.high,
+);
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  log("Background notification: ${message.data}");
+  print('Handling a background message ${message.data}');
+}
+
+void onDidReceiveBackgroundNotificationResponse(NotificationResponse response) {
+  log("Background notification:....... ${response?.actionId}");
+  print('Handling a background message.......... ${response?.actionId}');
+}
+
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
@@ -43,15 +64,6 @@ Future main() async {
     runApp(MyApp());
   });
 }
-
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_importance_channel', // id
-  'High Importance Notifications', // title
-  //'This channel is used for important notifications.', // description
-  importance: Importance.high,
-);
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
 
 class MyApp extends StatefulWidget {
   @override
@@ -90,18 +102,33 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    getFcmToken();
-    readyNotificationSystem();
+    scheduleMicrotask(() {
+      initData();
+    });
+  }
+
+  Future<void> initData() async {
+    await getFcmToken();
+    await readyNotificationSystem();
     var initialzationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings =
         InitializationSettings(android: initialzationSettingsAndroid);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse:
+            (NotificationResponse notificationResponse) {
+      Get.toNamed(
+        AppRoutes.notificationsScreen,
+      );
+    },
+        onDidReceiveBackgroundNotificationResponse:
+            onDidReceiveBackgroundNotificationResponse);
     var user = FirebaseAuth.instance.currentUser;
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
+      print(message.data);
       if (chatEnabled && message.data['type'] == 'message') {
         return;
       }
@@ -127,51 +154,37 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         );
-
-        // if (user != null) {
-        //   var reference1 = FirebaseFirestore.instance
-        //       .collection('TaousUser')
-        //       .doc(user.uid.toString());
-        //
-        //   var doc1 = await reference1.get();
-        //   if (doc1.exists) {
-        //     reference1.update({
-        //       'notifications': FieldValue.arrayUnion(
-        //         [
-        //           {
-        //             'id': channel.id,
-        //             'timestamp': DateTime.now(),
-        //             'notification': [notification.title, notification.body]
-        //           }
-        //         ],
-        //       )
-        //     });
-        //   }
-        // }
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null) {
-        showDialog(
-            context: context,
-            builder: (_) {
-              return AlertDialog(
-                title: Text(notification.title!),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text(notification.body!)],
-                  ),
-                ),
-              );
-            });
+      if (notification != null) {
+        Future.delayed(const Duration(microseconds: 500), () {
+          // Navigator.push(
+          //     navigatorKey.currentState?.context ?? context,
+          //     MaterialPageRoute(
+          //         builder: (context) =>
+          //             Material(child: NotificationsScreen())));
+        });
+
+        // showDialog(
+        //     context: navigatorKey.currentState?.context ?? context,
+        //     builder: (_) {
+        //       return AlertDialog(
+        //         title: Text(notification.title!),
+        //         content: SingleChildScrollView(
+        //           child: Column(
+        //             crossAxisAlignment: CrossAxisAlignment.start,
+        //             children: [Text(notification.body!)],
+        //           ),
+        //         ),
+        //       );
+        //     });
       }
     });
     print('111');
-    getFcmToken();
   }
 
   Future<void> getFcmToken() async {
@@ -182,7 +195,9 @@ class _MyAppState extends State<MyApp> {
       FirebaseFirestore.instance
           .collection('TaousUser')
           .doc(user.uid.toString())
-          .set({'fcmToken': fcmToken}, SetOptions(merge: true));
+          .set({
+        'fcmTokens': FieldValue.arrayUnion([fcmToken])
+      }, SetOptions(merge: true));
     }
   }
 
@@ -190,6 +205,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return ProviderScope(
       child: GetMaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         theme: ThemeData().copyWith(
             dividerColor: Colors.transparent,
@@ -213,37 +229,4 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-  var user = FirebaseAuth.instance.currentUser;
-
-  if (user != null) {
-    var reference1 = FirebaseFirestore.instance
-        .collection('TaousUser')
-        .doc(user.uid.toString());
-
-    var doc1 = await reference1.get();
-    // if (doc1.exists) {
-    //   reference1.update({
-    //     'notifications': FieldValue.arrayUnion(
-    //       [
-    //         {
-    //           'id': channel.id,
-    //           'timestamp': DateTime.now(),
-    //           'notification': [
-    //             message.notification?.title,
-    //             message.notification?.body
-    //           ]
-    //         }
-    //       ],
-    //     )
-    //   });
-    // }
-  }
-  print('sdsdsdsdsdsdsds');
-  print('Handling a background message ${message.notification?.body}');
 }

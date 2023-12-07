@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
 import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/post_screen/controller/post_controller.dart';
@@ -33,11 +34,11 @@ class CustomPost extends StatelessWidget {
       final username = data?['fullName'];
 
       final input = SendNotificationUsecaseInput(
-        userId: postOwnerId,
+        toUserId: postOwnerId,
         notification: PushNotification(
           title: 'New liked',
           description: '$username has liked your post',
-          type: 'like_post',
+          type: NotificationType.likePost.name,
           id: DateTime.now().millisecondsSinceEpoch,
         ),
       );
@@ -57,6 +58,10 @@ class CustomPost extends StatelessWidget {
       liked.value = 1;
     } else {
       liked.value = 0;
+    }
+
+    if (data == null) {
+      return SizedBox();
     }
     return Container(
       decoration: AppDecoration.fillPrimaryContainer.copyWith(

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:taousapp/presentation/comments/bindings/comments_binding.dart';
 import 'package:taousapp/presentation/comments/views/comments_view.dart';
 import 'package:taousapp/presentation/settings_screen/account_management_screen/account_management_screen.dart';
@@ -45,6 +46,8 @@ import 'package:taousapp/presentation/make_complaint_screen/binding/make_complai
 import 'package:taousapp/presentation/app_navigation_screen/app_navigation_screen.dart';
 import 'package:taousapp/presentation/app_navigation_screen/binding/app_navigation_binding.dart';
 import 'package:get/get.dart';
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class AppRoutes {
   static const String splashoneScreen = '/splashone_screen';

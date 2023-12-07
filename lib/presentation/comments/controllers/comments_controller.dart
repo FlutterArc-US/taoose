@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
 import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
 import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/post_screen/models/comment_model.dart';
@@ -45,11 +46,11 @@ class CommentsController extends GetxController {
 
     if (myUserId != postOwnerUserId) {
       final input = SendNotificationUsecaseInput(
-        userId: postOwnerUserId,
+        toUserId: postOwnerUserId,
         notification: PushNotification(
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'New Comment',
-          type: 'comment',
+          type: NotificationType.comment.name,
           description: comment,
         ),
       );
@@ -96,11 +97,11 @@ class CommentsController extends GetxController {
       //TODO: Send Notification to other person
 
       final input = SendNotificationUsecaseInput(
-        userId: commentOwnerId,
+        toUserId: commentOwnerId,
         notification: PushNotification(
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'New Reply',
-          type: 'comment',
+          type: NotificationType.comment.name,
           description: comment,
         ),
       );
@@ -122,9 +123,10 @@ class CommentsController extends GetxController {
         .collection('comments')
         .snapshots()
         .map(
-          (event) =>
-              event.docs.map((e) => CommentModel.fromJson(e.data())).toList(),
-        );
+      (event) {
+        return event.docs.map((e) => CommentModel.fromJson(e.data())).toList();
+      },
+    );
   }
 
   Stream<List<CommentModel>> listenToSubComments({
@@ -146,5 +148,156 @@ class CommentsController extends GetxController {
           (event) =>
               event.docs.map((e) => CommentModel.fromJson(e.data())).toList(),
         );
+  }
+
+  /// [like comment]
+  Future<void> likeComment({
+    required String postId,
+    required String commentId,
+    required String myUserId,
+    required String category,
+    required String postOwnerUserId,
+    required String commentOwnerId,
+  }) async {
+    FirebaseFirestore.instance
+        .collection('userPosts')
+        .doc(postOwnerUserId)
+        .collection(category)
+        .doc(postId)
+        .collection('comments')
+        .doc(commentId)
+        .set(
+      {
+        'likedBy': FieldValue.arrayUnion([myUserId])
+      },
+      SetOptions(merge: true),
+    );
+
+    if (myUserId != commentOwnerId) {
+      final document = await FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(myUserId)
+          .get();
+      if (!document.exists) {
+        return;
+      }
+      final data = document.data();
+      final username = data?['fullName'];
+      final input = SendNotificationUsecaseInput(
+        toUserId: commentOwnerId,
+        notification: PushNotification(
+          id: DateTime.now().millisecondsSinceEpoch,
+          title: 'Like Comment',
+          type: 'like_comment',
+          description: '$username like your comment',
+        ),
+      );
+      await sendNotificationUsecase(input);
+    }
+  }
+
+  /// [Unlike comment]
+  Future<void> unLikeComment({
+    required String postId,
+    required String commentId,
+    required String myUserId,
+    required String category,
+    required String postOwnerUserId,
+    required String commentOwnerId,
+  }) async {
+    FirebaseFirestore.instance
+        .collection('userPosts')
+        .doc(postOwnerUserId)
+        .collection(category)
+        .doc(postId)
+        .collection('comments')
+        .doc(commentId)
+        .set(
+      {
+        'likedBy': FieldValue.arrayRemove([myUserId])
+      },
+      SetOptions(merge: true),
+    );
+
+    if (myUserId != postOwnerUserId) {}
+  }
+
+  /// [like sub comment]
+  Future<void> likeSubComment({
+    required String postId,
+    required String commentId,
+    required String myUserId,
+    required String category,
+    required String postOwnerId,
+    required String commentOwnerId,
+    required String subCommentId,
+  }) async {
+    FirebaseFirestore.instance
+        .collection('userPosts')
+        .doc(postOwnerId)
+        .collection(category)
+        .doc(postId)
+        .collection('comments')
+        .doc(commentId)
+        .collection('subComments')
+        .doc(subCommentId)
+        .set(
+      {
+        'likedBy': FieldValue.arrayUnion([myUserId])
+      },
+      SetOptions(merge: true),
+    );
+
+    if (myUserId != commentOwnerId) {
+      final document = await FirebaseFirestore.instance
+          .collection('TaousUser')
+          .doc(myUserId)
+          .get();
+      if (!document.exists) {
+        return;
+      }
+      final data = document.data();
+      final username = data?['fullName'];
+      final input = SendNotificationUsecaseInput(
+        toUserId: commentOwnerId,
+        notification: PushNotification(
+          id: DateTime.now().millisecondsSinceEpoch,
+          title: 'Like Comment',
+          type: 'like_comment',
+          description: '$username like your comment',
+        ),
+      );
+
+      await sendNotificationUsecase(input);
+    }
+  }
+
+  /// [Unlike sub comment]
+  Future<void> unLikeSubComment({
+    required String postId,
+    required String commentId,
+    required String myUserId,
+    required String category,
+    required String postOwnerId,
+    required String commentOwnerId,
+    required String subCommentId,
+  }) async {
+    FirebaseFirestore.instance
+        .collection('userPosts')
+        .doc(postOwnerId)
+        .collection(category)
+        .doc(postId)
+        .collection('comments')
+        .doc(commentId)
+        .collection('subComments')
+        .doc(subCommentId)
+        .set(
+      {
+        'likedBy': FieldValue.arrayRemove([myUserId])
+      },
+      SetOptions(merge: true),
+    );
+
+    if (myUserId != postOwnerId) {}
   }
 }

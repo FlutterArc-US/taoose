@@ -1,8 +1,15 @@
+import 'dart:developer';
+
 import 'package:taousapp/infrastructure/usecase.dart';
 import 'package:taousapp/infrastructure/usecase_input.dart';
 import 'package:taousapp/infrastructure/usecase_output.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
+
+void onDidReceiveBackgroundNotificationResponse(
+    NotificationResponse notificationResponse) {
+  log("Listen notification on  background");
+}
 
 class InitializeLocalNotificationUsecaseInput extends Input {
   InitializeLocalNotificationUsecaseInput();
@@ -43,10 +50,10 @@ class InitializeLocalNotificationUsecase extends Usecase<
       macOS: initializationSettingsDarwin,
     );
 
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse:
-          (NotificationResponse notificationResponse) {},
-    );
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse:
+            (NotificationResponse notificationResponse) {},
+        onDidReceiveBackgroundNotificationResponse:
+            onDidReceiveBackgroundNotificationResponse);
   }
 }

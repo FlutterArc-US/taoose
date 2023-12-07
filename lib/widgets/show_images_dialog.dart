@@ -94,7 +94,7 @@ class _ShowImagesDialogState extends State<ShowImagesDialog> {
               SizedBox(height: 21.h),
               Text(
                 '${imageCount + 1}/${widget.images.length}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   color: Colors.white,
