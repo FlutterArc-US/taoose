@@ -18,6 +18,8 @@ import 'package:taousapp/util/di/di.dart';
 import 'core/app_export.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'presentation/notifications_screen/notifications_screen.dart';
+
 var chatEnabled = false;
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -29,57 +31,11 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  RemoteNotification? notification = message.notification;
-  AndroidNotification? android = message.notification?.android;
-
-  var initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  var initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveBackgroundNotificationResponse:
-        onDidReceiveBackgroundNotificationResponse,
-  );
-  print(message.data);
-  if (chatEnabled && message.data['type'] == 'message') {
-    return;
-  }
-
-  log("Background notification: ${notification?.body}");
-  print('Handling a background message ${notification?.body}');
+  log("Background notification: ${message.data}");
+  print('Handling a background message ${message.data}');
 }
 
 void onDidReceiveBackgroundNotificationResponse(NotificationResponse response) {
-  runApp(
-    ProviderScope(
-      child: GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData().copyWith(
-              dividerColor: Colors.transparent,
-              colorScheme: ThemeData(
-                      colorScheme: ColorScheme.fromSwatch()
-                          .copyWith(secondary: ColorConstant.teal200))
-                  .colorScheme
-                  .copyWith(primary: ColorConstant.teal200)),
-          translations: AppLocalization(),
-          locale: Get.deviceLocale, //for setting localization strings
-          fallbackLocale: Locale('en', 'US'),
-          title: 'taousapp',
-          initialBinding: InitialBindings(),
-          initialRoute: AppRoutes.notificationsScreen,
-          getPages: AppRoutes.pages,
-          builder: (context, child) {
-            return Material(child: child!);
-          }),
-    ),
-  );
-
   log("Background notification:....... ${response?.actionId}");
   print('Handling a background message.......... ${response?.actionId}');
 }
@@ -119,7 +75,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> readyNotificationSystem() async {
     await enableNotificationPermission();
-    //  await initializeLocalNotification();
+    await initializeLocalNotification();
   }
 
   Future<void> enableNotificationPermission() async {
@@ -201,25 +157,33 @@ class _MyAppState extends State<MyApp> {
       }
     });
 
-    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    //   RemoteNotification? notification = message.notification;
-    //   AndroidNotification? android = message.notification?.android;
-    //   if (notification != null && android != null) {
-    //     showDialog(
-    //         context: context,
-    //         builder: (_) {
-    //           return AlertDialog(
-    //             title: Text(notification.title!),
-    //             content: SingleChildScrollView(
-    //               child: Column(
-    //                 crossAxisAlignment: CrossAxisAlignment.start,
-    //                 children: [Text(notification.body!)],
-    //               ),
-    //             ),
-    //           );
-    //         });
-    //   }
-    // });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null) {
+        Future.delayed(const Duration(microseconds: 500), () {
+          // Navigator.push(
+          //     navigatorKey.currentState?.context ?? context,
+          //     MaterialPageRoute(
+          //         builder: (context) =>
+          //             Material(child: NotificationsScreen())));
+        });
+
+        // showDialog(
+        //     context: navigatorKey.currentState?.context ?? context,
+        //     builder: (_) {
+        //       return AlertDialog(
+        //         title: Text(notification.title!),
+        //         content: SingleChildScrollView(
+        //           child: Column(
+        //             crossAxisAlignment: CrossAxisAlignment.start,
+        //             children: [Text(notification.body!)],
+        //           ),
+        //         ),
+        //       );
+        //     });
+      }
+    });
     print('111');
   }
 
@@ -241,6 +205,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return ProviderScope(
       child: GetMaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         theme: ThemeData().copyWith(
             dividerColor: Colors.transparent,

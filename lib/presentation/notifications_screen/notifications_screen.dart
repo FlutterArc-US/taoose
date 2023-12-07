@@ -19,9 +19,10 @@ class NotificationsScreen extends GetWidget<NotificationsController> {
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
     controller.getFollowRequests();
-    if(controller.requests.length >0) controller.getRequests();
+    if (controller.requests.length > 0) controller.getRequests();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         centerTitle: true,
         title: Column(
@@ -76,8 +77,8 @@ class NotificationsScreen extends GetWidget<NotificationsController> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 15.0),
                 ),
-                Obx(()=>
-                  controller.requests.length == 0
+                Obx(
+                  () => controller.requests.length == 0
                       ? Container()
                       : Obx(
                           () => Align(
@@ -99,7 +100,8 @@ class NotificationsScreen extends GetWidget<NotificationsController> {
                                                   .toString() +
                                               ")"
                                           : "Hide Requests",
-                                      style: TextStyle(color: Colors.blueAccent),
+                                      style:
+                                          TextStyle(color: Colors.blueAccent),
                                     )),
                               )),
                         ),

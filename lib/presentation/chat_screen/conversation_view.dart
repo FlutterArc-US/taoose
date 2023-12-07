@@ -182,6 +182,7 @@ class _ConversationViewState extends ConsumerState<ConversationView> {
 
   @override
   void dispose() {
+    messagesStreamSubscription?.cancel();
     super.dispose();
   }
 

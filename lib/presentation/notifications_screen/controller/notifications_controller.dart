@@ -80,7 +80,7 @@ class NotificationsController extends GetxController {
     var doc = await reference.get();
     if (doc.exists) {
       var data = doc.data();
-      notifications.value = data?["notifications"];
+      notifications.value = data?["notifications"] ?? [];
     }
     return;
   }
