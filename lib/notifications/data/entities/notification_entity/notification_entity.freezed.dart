@@ -263,7 +263,7 @@ class _$RestNotificationEntityImpl implements _RestNotificationEntity {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$RestNotificationEntityImpl &&
