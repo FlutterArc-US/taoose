@@ -5,8 +5,6 @@ import 'package:taousapp/notifications/domain/models/notification/push_notificat
 import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/post_screen/models/comment_model.dart';
 import 'package:taousapp/util/di/di.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class CommentsController extends GetxController {
   var replyingTo = ''.obs;
@@ -189,7 +187,7 @@ class CommentsController extends GetxController {
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'Like Comment',
           type: 'like_comment',
-          description: '$username like your comment',
+          description: '$username liked your comment',
         ),
       );
       await sendNotificationUsecase(input);
@@ -264,7 +262,7 @@ class CommentsController extends GetxController {
           id: DateTime.now().millisecondsSinceEpoch,
           title: 'Like Comment',
           type: 'like_comment',
-          description: '$username like your comment',
+          description: '$username liked your comment',
         ),
       );
 

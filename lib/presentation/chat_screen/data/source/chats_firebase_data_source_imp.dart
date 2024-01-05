@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:injectable/injectable.dart';
-import 'package:taousapp/infrastructure/repository.dart';
 import 'package:taousapp/notifications/domain/enums/notification_type_enum.dart';
+import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
+import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/chat_screen/data/source/chat_firebase_datasource.dart';
-import 'package:taousapp/presentation/chat_screen/domain/repository/chat_repository.dart';
 import 'package:taousapp/presentation/chat_screen/domain/usecases/create_chat.dart';
 import 'package:taousapp/presentation/chat_screen/domain/usecases/create_message.dart';
 import 'package:taousapp/presentation/chat_screen/domain/usecases/delete_chat.dart';
@@ -12,16 +13,8 @@ import 'package:taousapp/presentation/chat_screen/domain/usecases/get_all_chats.
 import 'package:taousapp/presentation/chat_screen/domain/usecases/get_all_messages.dart';
 import 'package:taousapp/presentation/chat_screen/domain/usecases/get_chat_id_for_users.dart';
 import 'package:taousapp/presentation/chat_screen/domain/usecases/update_unread_messages_usecase.dart';
-
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:taousapp/notifications/domain/models/notification/push_notification.dart';
-import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
-import 'package:taousapp/presentation/chat_screen/data/source/chat_firebase_datasource.dart';
-import 'package:taousapp/presentation/chat_screen/domain/usecases/create_message.dart';
 import 'package:taousapp/presentation/chat_screen/models/chat_model.dart';
 import 'package:taousapp/presentation/chat_screen/models/message_model.dart';
-import 'package:taousapp/presentation/chat_screen/models/message_type.dart';
-import 'package:injectable/injectable.dart';
 import 'package:taousapp/util/di/di.dart';
 
 @LazySingleton(as: ChatFirebaseDataSource)
@@ -150,7 +143,7 @@ class ChatsFirebaseDataSourceImp extends ChatFirebaseDataSource {
         notification: PushNotification(
           title: 'New Message',
           type: NotificationType.newMessage.name,
-          description: '$username has sent you message',
+          description: '$username sent you message',
           id: DateTime.now().millisecondsSinceEpoch,
         ),
       );

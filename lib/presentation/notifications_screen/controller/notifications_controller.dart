@@ -7,8 +7,6 @@ import 'package:taousapp/notifications/domain/usecases/send_notificaiton.dart';
 import 'package:taousapp/presentation/notifications_screen/models/notifications_model.dart';
 import 'package:taousapp/util/di/di.dart';
 
-import '../../home_screen/controller/home_controller.dart';
-
 /// A controller class for the NotificationsScreen.
 ///
 /// This class manages the state of the NotificationsScreen, including the
@@ -61,7 +59,7 @@ class NotificationsController extends GetxController {
             id: DateTime.now().millisecondsSinceEpoch,
             type: NotificationType.acceptRequest.name,
             title: 'Accept Request',
-            description: '${currentUser.data()?['UserName']} has accept your '
+            description: '${currentUser.data()?['UserName']} has accepted your '
                 'request',
           ),
         );
