@@ -32,6 +32,7 @@ class CustomSearch {
                     child: InkWell(
                         onTap: () {
                           Get.back();
+                          FocusManager.instance.primaryFocus?.unfocus();
                         },
                         child: Icon(Icons.arrow_drop_down))),
                 Padding(
