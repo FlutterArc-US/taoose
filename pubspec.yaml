@@ -20,8 +20,8 @@ dependencies:
   country_codes: ^2.2.0
   carousel_slider: ^4.2.1
   cloud_firestore: ^4.14.0
-  firebase_auth: ^4.10.1
-  loading_animation_widget: ^4.16.0
+  firebase_auth: ^4.16.0
+  loading_animation_widget: ^1.2.0+4
   firebase_messaging: ^14.7.10
   overlay_support: ^2.1.0
   flutter_local_notifications: ^16.3.0
