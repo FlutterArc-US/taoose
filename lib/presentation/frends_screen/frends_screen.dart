@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/widgets/custom_friends.dart';
 import 'package:taousapp/widgets/custom_search_view.dart';
@@ -6,14 +7,18 @@ import 'package:taousapp/widgets/custom_search_view.dart';
 import 'controller/frends_controller.dart';
 
 // ignore_for_file: must_be_immutable
-class FrendsScreen extends GetWidget<FrendsController> {
-  const FrendsScreen({Key? key})
-      : super(
-          key: key,
-        );
+class FrendsScreen extends StatefulWidget {
+  const FrendsScreen({super.key});
 
   @override
+  State<FrendsScreen> createState() => _FrendsScreenState();
+}
+
+class _FrendsScreenState extends State<FrendsScreen> {
+  FrendsController controller = FrendsController();
+  @override
   Widget build(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
     controller.getFollowFollowings();
     if (controller.following.isNotEmpty) {
       controller.getFollowing();
@@ -206,59 +211,65 @@ class FrendsScreen extends GetWidget<FrendsController> {
                         () => controller.activeWidget.value == 0
                             ? Align(
                                 alignment: Alignment.center,
-                                child: CustomSearchView(
-                                  onChanged: (value) async {
-                                    print(value);
-                                    if (value == '') {
-                                      controller.searchLength.value = 0;
-                                      //controller.searchFollowers(value);
-                                      /*await controller.getFollowFollowings();
-                                controller.getFriends();
-                                controller.update();*/
-                                    } else {
-                                      controller.searchLength.value =
-                                          value.length;
-                                      controller.searchFollowers(value);
-                                    }
-                                    //controller.searchFollowers(value.toString().toLowerCase());
-                                    /*await controller.getFollowFollowings();
-                              controller.getFriends();
-                              controller.update();
-                              print(value);*/
+                                child: TapRegion(
+                                  onTapOutside: (tap) {
+                                    SystemChannels.textInput
+                                        .invokeMethod('TextInput.hide');
                                   },
-                                  autofocus: false,
-                                  margin: EdgeInsets.only(
-                                    left: 15.h,
-                                    top: 13.v,
-                                    right: 15.h,
-                                  ),
-                                  controller: controller.searchController,
-                                  hintText: "lbl_search".tr,
-                                  alignment: Alignment.center,
-                                  prefix: Container(
-                                    margin: EdgeInsets.fromLTRB(
-                                        11.h, 12.v, 4.h, 13.v),
-                                    child: CustomImageView(
-                                      svgPath: ImageConstant.imgCharmsearch,
-                                    ),
-                                  ),
-                                  prefixConstraints: BoxConstraints(
-                                    maxHeight: 48.v,
-                                  ),
-                                  suffix: Padding(
-                                    padding: EdgeInsets.only(
+                                  child: CustomSearchView(
+                                    onChanged: (value) async {
+                                      print(value);
+                                      if (value == '') {
+                                        controller.searchLength.value = 0;
+                                        //controller.searchFollowers(value);
+                                        /*await controller.getFollowFollowings();
+                                  controller.getFriends();
+                                  controller.update();*/
+                                      } else {
+                                        controller.searchLength.value =
+                                            value.length;
+                                        controller.searchFollowers(value);
+                                      }
+                                      //controller.searchFollowers(value.toString().toLowerCase());
+                                      /*await controller.getFollowFollowings();
+                                                                controller.getFriends();
+                                                                controller.update();
+                                                                print(value);*/
+                                    },
+                                    autofocus: false,
+                                    margin: EdgeInsets.only(
+                                      left: 15.h,
+                                      top: 13.v,
                                       right: 15.h,
                                     ),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        //controller.getFriends();
-                                        controller.update();
-                                        controller.searchLength.value = 0;
-                                        controller.searchController.clear();
-                                      },
-                                      icon: Icon(
-                                        Icons.clear,
-                                        color: Colors.grey.shade600,
+                                    controller: controller.searchController,
+                                    hintText: "lbl_search".tr,
+                                    alignment: Alignment.center,
+                                    prefix: Container(
+                                      margin: EdgeInsets.fromLTRB(
+                                          11.h, 12.v, 4.h, 13.v),
+                                      child: CustomImageView(
+                                        svgPath: ImageConstant.imgCharmsearch,
+                                      ),
+                                    ),
+                                    prefixConstraints: BoxConstraints(
+                                      maxHeight: 48.v,
+                                    ),
+                                    suffix: Padding(
+                                      padding: EdgeInsets.only(
+                                        right: 15.h,
+                                      ),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          //controller.getFriends();
+                                          controller.update();
+                                          controller.searchLength.value = 0;
+                                          controller.searchController.clear();
+                                        },
+                                        icon: Icon(
+                                          Icons.clear,
+                                          color: Colors.grey.shade600,
+                                        ),
                                       ),
                                     ),
                                   ),
