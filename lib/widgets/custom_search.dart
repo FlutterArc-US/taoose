@@ -20,7 +20,7 @@ class CustomSearch {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.9,
-        decoration: new BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
         ),
         child: Obx(
@@ -32,9 +32,8 @@ class CustomSearch {
                     child: InkWell(
                         onTap: () {
                           Get.back();
-                          FocusManager.instance.primaryFocus?.unfocus();
                         },
-                        child: Icon(Icons.arrow_drop_down))),
+                        child: const Icon(Icons.arrow_drop_down))),
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, bottom: 15),

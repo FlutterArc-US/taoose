@@ -1,9 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:taousapp/presentation/settings_screen/settings_screen.dart';
-import 'controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/presentation/settings_screen/settings_screen.dart';
 import 'package:taousapp/widgets/custom_outlined_button.dart';
+
+import 'controller/profile_controller.dart';
 
 // ignore_for_file: must_be_immutable
 class ProfileScreen extends GetWidget<ProfileController> {
@@ -334,7 +335,10 @@ class ProfileScreen extends GetWidget<ProfileController> {
                                     imagePath: ImageConstant.logoImage,
                                     alignment: Alignment.center,
                                   ),
-                                  Text("Your Two Collection Is Empty", style: CustomTextStyles.bodyMediumBlack900,)
+                                  Text(
+                                    "Your Two Collection Is Empty",
+                                    style: CustomTextStyles.bodyMediumBlack900,
+                                  )
                                 ],
                               );
                             },
@@ -367,7 +371,8 @@ class ProfileScreen extends GetWidget<ProfileController> {
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(20.00)),
                                       child: Image.network(
-                                        controller.bottomPosts[index]['photoUrl'],
+                                        controller.bottomPosts[index]
+                                            ['photoUrl'],
                                         fit: BoxFit.cover,
                                         //height: 100.adaptSize,
                                         //width: 100.adaptSize,
@@ -438,7 +443,10 @@ class ProfileScreen extends GetWidget<ProfileController> {
                                     imagePath: ImageConstant.logoImage,
                                     alignment: Alignment.center,
                                   ),
-                                  Text("Your Three Collection Is Empty", style: CustomTextStyles.bodyMediumBlack900,)
+                                  Text(
+                                    "Your Three Collection Is Empty",
+                                    style: CustomTextStyles.bodyMediumBlack900,
+                                  )
                                 ],
                               );
                             },
