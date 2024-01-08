@@ -115,7 +115,7 @@ class HomeScreen extends GetWidget<HomeController> {
                         padding: const EdgeInsets.all(8.0),
                         child: CustomOutlinedButton(
                           decoration: BoxDecoration(color: Colors.red),
-                          width: 70,
+                          width: 75.h,
                           text: 'Yes',
                           buttonTextStyle: CustomTextStyles.titleSmallSemiBold,
                           onTap: () {
@@ -126,7 +126,7 @@ class HomeScreen extends GetWidget<HomeController> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: CustomOutlinedButton(
-                          width: 70,
+                          width: 75.h,
                           text: 'No',
                           buttonTextStyle: CustomTextStyles.titleSmallSemiBold,
                           onTap: () {
