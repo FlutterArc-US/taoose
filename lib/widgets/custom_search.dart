@@ -22,7 +22,7 @@ class _CustomSearchState extends State<CustomSearch> {
   final RxList<DocumentSnapshot> users = <DocumentSnapshot>[].obs;
   TextEditingController searchController = TextEditingController();
 
-  searchUsers(change) async {
+  void searchUsers(String change) async {
     String username;
     print(change.toString().replaceAll(RegExp('@'), ''));
     if (change.length > 0) {
