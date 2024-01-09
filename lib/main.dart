@@ -19,7 +19,7 @@ import 'package:taousapp/util/di/di.dart';
 import 'core/app_export.dart';
 
 var chatEnabled = false;
-final newNotificationNotifier = ValueNotifier<bool>(false);
+ValueNotifier<int> newNotificationNotifier = ValueNotifier<int>(0);
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel',
@@ -35,7 +35,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void onDidReceiveBackgroundNotificationResponse(NotificationResponse response) {
-  newNotificationNotifier.value = true;
   log("Background notification:....... ${response?.actionId}");
   print('Handling a background message.......... ${response?.actionId}');
 }
@@ -128,7 +127,6 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
-
       print(message.data);
       if (chatEnabled && message.data['type'] == 'message') {
         return;
@@ -155,6 +153,7 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         );
+        newNotificationNotifier.value++;
       }
     });
 

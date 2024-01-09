@@ -20,54 +20,53 @@ class NotificationsScreen extends GetWidget<NotificationsController> {
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
     controller.getFollowRequests();
-    if (controller.requests.length > 0) controller.getRequests();
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        centerTitle: true,
-        title: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                top: 22.h,
-                left: 22.h,
-                //right: 22.h,
-              ),
-              child: Row(
+    if (controller.requests.isNotEmpty) controller.getRequests();
+    return ValueListenableBuilder(
+        valueListenable: newNotificationNotifier,
+        builder: (context, value, child) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            appBar: CustomAppBar(
+              centerTitle: true,
+              title: Column(
                 children: [
-                  SizedBox(
-                    height: 30.h,
-                    width: 30.h,
-                    child: AppbarImage1(
-                      onTap: () => Get.back(),
-                      svgPath: ImageConstant.imgBackarrow,
-                      margin: EdgeInsets.only(
-                        top: 6.v,
-                        bottom: 5.v,
-                      ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: 22.h,
+                      left: 22.h,
+                      //right: 22.h,
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          height: 30.h,
+                          width: 30.h,
+                          child: AppbarImage1(
+                            onTap: () => Get.back(),
+                            svgPath: ImageConstant.imgBackarrow,
+                            margin: EdgeInsets.only(
+                              top: 6.v,
+                              bottom: 5.v,
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: AppbarSubtitle(
+                            text: "lbl_notifications".tr,
+                            margin: EdgeInsets.only(left: 95.h),
+                          ),
+                        ),
+                        Spacer(),
+                        //Container(color: Colors.black,width: 30, height: 30,margin: EdgeInsets.only(right: 22.h,left: 22.h),)
+                      ],
                     ),
                   ),
-                  Center(
-                    child: AppbarSubtitle(
-                      text: "lbl_notifications".tr,
-                      margin: EdgeInsets.only(left: 95.h),
-                    ),
-                  ),
-                  Spacer(),
-                  //Container(color: Colors.black,width: 30, height: 30,margin: EdgeInsets.only(right: 22.h,left: 22.h),)
+                  SizedBox(height: 20.v),
                 ],
               ),
+              //styleType: Style.bgFill_1,
             ),
-            SizedBox(height: 20.v),
-          ],
-        ),
-        //styleType: Style.bgFill_1,
-      ),
-      body: ValueListenableBuilder(
-          valueListenable: newNotificationNotifier,
-          builder: (context, value, child) {
-            return SizedBox(
+            body: SizedBox(
               width: mediaQueryData.size.width,
               child: SingleChildScrollView(
                 //padding: EdgeInsets.only(top: 16.v),
@@ -167,19 +166,19 @@ class NotificationsScreen extends GetWidget<NotificationsController> {
                                                               .center,
                                                       children: [
                                                         /*
-                                                ClipRRect(
-                                                        //borderRadius: BorderRadius.all(Radius.circular(48.00)),
-                                                        child: SvgPicture.asset(
-                                                          //margin: EdgeInsets.only(left: 0),
-                                                          ImageConstant.imgUserPrimary
-                                                              .toString(),
+                                              ClipRRect(
+                                                      //borderRadius: BorderRadius.all(Radius.circular(48.00)),
+                                                      child: SvgPicture.asset(
+                                                        //margin: EdgeInsets.only(left: 0),
+                                                        ImageConstant.imgUserPrimary
+                                                            .toString(),
 
-                                                          color: appTheme.gray500
-                                                              .withOpacity(0.4),
-                                                          height: 60.adaptSize,
-                                                          width: 60.adaptSize,
-                                                        ),
-                                                      ),*/
+                                                        color: appTheme.gray500
+                                                            .withOpacity(0.4),
+                                                        height: 60.adaptSize,
+                                                        width: 60.adaptSize,
+                                                      ),
+                                                    ),*/
 
                                                         controller.requestList[
                                                                     index]
@@ -430,8 +429,8 @@ class NotificationsScreen extends GetWidget<NotificationsController> {
                   ),
                 ),
               ),
-            );
-          }),
-    );
+            ),
+          );
+        });
   }
 }
