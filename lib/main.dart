@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_codes/country_codes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,11 +17,9 @@ import 'package:taousapp/notifications/domain/usecases/initialize_local_notifica
 import 'package:taousapp/util/di/di.dart';
 
 import 'core/app_export.dart';
-import 'package:firebase_core/firebase_core.dart';
-
-import 'presentation/notifications_screen/notifications_screen.dart';
 
 var chatEnabled = false;
+final newNotificationNotifier = ValueNotifier<bool>(false);
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel',
@@ -36,6 +35,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void onDidReceiveBackgroundNotificationResponse(NotificationResponse response) {
+  newNotificationNotifier.value = true;
   log("Background notification:....... ${response?.actionId}");
   print('Handling a background message.......... ${response?.actionId}');
 }
@@ -113,9 +113,8 @@ class _MyAppState extends State<MyApp> {
     var initialzationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings = InitializationSettings(
-      android: initialzationSettingsAndroid,
-      iOS: DarwinInitializationSettings()
-    );
+        android: initialzationSettingsAndroid,
+        iOS: DarwinInitializationSettings());
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) {
