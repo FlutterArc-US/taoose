@@ -1,18 +1,18 @@
 import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/core/constants/color_constant.dart';
 import 'package:taousapp/data/cloths.dart/cloths.dart';
-import '../prodcut_details_screen/widgets/userprofile1_item_widget.dart';
-import 'controller/prodcut_details_controller.dart';
-import 'models/userprofile1_item_model.dart';
-import 'package:flutter/material.dart';
-import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/widgets/custom_elevated_button.dart';
 import 'package:taousapp/widgets/custom_text_form_field.dart';
+
+import 'controller/prodcut_details_controller.dart';
 
 // ignore_for_file: must_be_immutable
 class ProdcutDetailsScreen extends GetWidget<ProdcutDetailsController> {
@@ -130,7 +130,6 @@ class ProdcutDetailsScreen extends GetWidget<ProdcutDetailsController> {
                                   height: 50,
                                   child: DropdownSearch<String>(
                                     popupProps: PopupProps.modalBottomSheet(
-                                      showSelectedItems: true,
                                       isFilterOnline: true,
                                       showSearchBox: true,
                                       searchFieldProps: TextFieldProps(
