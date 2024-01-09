@@ -185,401 +185,416 @@ class _ConversationViewState extends ConsumerState<ConversationView> {
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(messagesProvider);
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(35.0),
-          topRight: Radius.circular(35.0),
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(35.0),
+            topRight: Radius.circular(35.0),
+          ),
         ),
-      ),
-      child: Column(
-          mainAxisSize: MainAxisSize.min,
-          // crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-                child: InkWell(
-                    onTap: () {
-                      Get.back();
-                    },
-                    child: const Icon(Icons.arrow_drop_down))),
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+            // crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                  child: InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: const Icon(Icons.arrow_drop_down))),
 
-            /// [User info]
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15, right: 15, top: 10, bottom: 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomImageView(
-                    imagePath: ImageConstant.imgPhoto4,
-                    height: 48.adaptSize,
-                    width: 48.adaptSize,
-                    radius: BorderRadius.circular(
-                      24.h,
+              /// [User info]
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15, right: 15, top: 10, bottom: 30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomImageView(
+                      imagePath: ImageConstant.imgPhoto4,
+                      height: 48.adaptSize,
+                      width: 48.adaptSize,
+                      radius: BorderRadius.circular(
+                        24.h,
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              widget.fullname,
-                              style: theme.textTheme.headlineSmall,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                widget.fullname,
+                                style: theme.textTheme.headlineSmall,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
                             ),
-                          ),
 
-                          /// [Typing]
-                          StreamBuilder(
-                              stream: FirebaseFirestore.instance
-                                  .collection('messages')
-                                  .doc(groupChatId)
-                                  .snapshots(),
-                              builder: (context, value) {
-                                final typingUserList =
-                                    value.data?.data()?['typing'] ?? [];
+                            /// [Typing]
+                            StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection('messages')
+                                    .doc(groupChatId)
+                                    .snapshots(),
+                                builder: (context, value) {
+                                  final typingUserList =
+                                      value.data?.data()?['typing'] ?? [];
 
-                                if (typingUserList == null) {
-                                  return const SizedBox();
-                                } else {
-                                  final typingList = typingUserList ?? [];
-                                  final isPeerUserTyping =
-                                      List.from(typingList ?? [])
-                                          .any((element) => element != userid);
-                                  if (isPeerUserTyping) {
-                                    return const Text(
-                                      'typing...',
-                                      style: TextStyle(color: Colors.green),
-                                    );
+                                  if (typingUserList == null) {
+                                    return const SizedBox();
+                                  } else {
+                                    final typingList = typingUserList ?? [];
+                                    final isPeerUserTyping =
+                                        List.from(typingList ?? []).any(
+                                            (element) => element != userid);
+                                    if (isPeerUserTyping) {
+                                      return const Text(
+                                        'typing...',
+                                        style: TextStyle(color: Colors.green),
+                                      );
+                                    }
                                   }
-                                }
 
-                                return StreamBuilder<
-                                        DocumentSnapshot<Map<String, dynamic>>>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('TaousUser')
-                                        .doc(widget.peeruid)
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-                                      final online =
-                                          snapshot.data?['online'] ?? false;
-                                      return !online
-                                          ? const SizedBox()
-                                          : Row(
-                                              children: [
-                                                Align(
-                                                  alignment:
-                                                      Alignment.bottomLeft,
-                                                  child: Container(
-                                                    height: 6.adaptSize,
-                                                    width: 6.adaptSize,
-                                                    margin: EdgeInsets.only(
-                                                        bottom: 2.v, left: 2.h),
-                                                    decoration: BoxDecoration(
-                                                      color: appTheme.red400,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                        3.h,
+                                  return StreamBuilder<
+                                          DocumentSnapshot<
+                                              Map<String, dynamic>>>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('TaousUser')
+                                          .doc(widget.peeruid)
+                                          .snapshots(),
+                                      builder: (context, snapshot) {
+                                        final online =
+                                            snapshot.data?['online'] ?? false;
+                                        return !online
+                                            ? const SizedBox()
+                                            : Row(
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.bottomLeft,
+                                                    child: Container(
+                                                      height: 6.adaptSize,
+                                                      width: 6.adaptSize,
+                                                      margin: EdgeInsets.only(
+                                                          bottom: 2.v,
+                                                          left: 2.h),
+                                                      decoration: BoxDecoration(
+                                                        color: appTheme.red400,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                          3.h,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                                Align(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 2.h),
-                                                    child: Text(
-                                                      "lbl_online".tr,
-                                                      style: CustomTextStyles
-                                                          .bodySmallBlack900,
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 2.h),
+                                                      child: Text(
+                                                        "lbl_online".tr,
+                                                        style: CustomTextStyles
+                                                            .bodySmallBlack900,
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                              ],
-                                            );
-                                    });
-                              })
-                        ],
+                                                ],
+                                              );
+                                      });
+                                })
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
-                  //Spacer(),
-                  CustomIconButton(
-                    height: 52.adaptSize,
-                    width: 52.adaptSize,
-                    margin: EdgeInsets.only(top: 2.v),
-                    padding: EdgeInsets.all(14.h),
-                    decoration: IconButtonStyleHelper.outlineGray,
-                    child: CustomImageView(
-                      svgPath: ImageConstant.imgOverflowmenu,
+                    //Spacer(),
+                    CustomIconButton(
+                      height: 52.adaptSize,
+                      width: 52.adaptSize,
+                      margin: EdgeInsets.only(top: 2.v),
+                      padding: EdgeInsets.all(14.h),
+                      decoration: IconButtonStyleHelper.outlineGray,
+                      child: CustomImageView(
+                        svgPath: ImageConstant.imgOverflowmenu,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                //height: 100,
+                child: Column(children: [
+                  /// [Messages]
+                  Expanded(
+                    //width: MediaQuery.of(context).size.width,
+                    //height: 450,
+
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(10.0),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        if (message.idFrom == userid) {
+                          if (message.type == MessageType.text.id) {
+                            return SendBubble(index, message);
+                          } else if (message.type == MessageType.image.id) {
+                            return SendImageBubble(index, message);
+                          }
+                          return const SizedBox();
+                        } else {
+                          if (message.type == MessageType.text.id) {
+                            return RecieveBubble(index, message);
+                          } else if (message.type == MessageType.image.id) {
+                            return RecieveImageBubble(index, message);
+                          }
+                          return const SizedBox();
+                        }
+                      },
+                      reverse: true,
+                      //  controller: listScrollController,
                     ),
                   ),
-                ],
-              ),
-            ),
-            Expanded(
-              //height: 100,
-              child: Column(children: [
-                /// [Messages]
-                Expanded(
-                  //width: MediaQuery.of(context).size.width,
-                  //height: 450,
-
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(10.0),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final message = messages[index];
-                      if (message.idFrom == userid) {
-                        if (message.type == MessageType.text.id) {
-                          return SendBubble(index, message);
-                        } else if (message.type == MessageType.image.id) {
-                          return SendImageBubble(index, message);
-                        }
-                        return const SizedBox();
-                      } else {
-                        if (message.type == MessageType.text.id) {
-                          return RecieveBubble(index, message);
-                        } else if (message.type == MessageType.image.id) {
-                          return RecieveImageBubble(index, message);
-                        }
-                        return const SizedBox();
-                      }
-                    },
-                    reverse: true,
-                    //  controller: listScrollController,
-                  ),
-                ),
-                Obx(
-                  () => sending.value == true
-                      ? Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            children: [
-                              // Align(
-                              //   alignment: Alignment.centerRight,
-                              //   child: Container(
-                              //     margin: EdgeInsets.only(
-                              //         left: 97.h, top: 10.v, right: 15.h),
-                              //     padding: EdgeInsets.symmetric(
-                              //       horizontal: 16.h,
-                              //       vertical: 15.v,
-                              //     ),
-                              //     decoration: AppDecoration.fillGray10003
-                              //         .copyWith(
-                              //       borderRadius: BorderRadiusStyle
-                              //           .customBorderTL151,
-                              //     ),
-                              //     child: SizedBox(
-                              //       width: 213.h,
-                              //       child: Text(
-                              //         chatContent.value.toString(),
-                              //         maxLines: 1000,
-                              //         overflow: TextOverflow.ellipsis,
-                              //         style: CustomTextStyles.bodyMedium14
-                              //             .copyWith(
-                              //           height: 1.50,
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                              // SizedBox(height: 5.v),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.only(top: 1.v, right: 21),
-                                      child: Text(
-                                        "Sending...",
-                                        style: CustomTextStyles
-                                            .bodySmallSkModernistBlack900,
+                  Obx(
+                    () => sending.value == true
+                        ? Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              children: [
+                                // Align(
+                                //   alignment: Alignment.centerRight,
+                                //   child: Container(
+                                //     margin: EdgeInsets.only(
+                                //         left: 97.h, top: 10.v, right: 15.h),
+                                //     padding: EdgeInsets.symmetric(
+                                //       horizontal: 16.h,
+                                //       vertical: 15.v,
+                                //     ),
+                                //     decoration: AppDecoration.fillGray10003
+                                //         .copyWith(
+                                //       borderRadius: BorderRadiusStyle
+                                //           .customBorderTL151,
+                                //     ),
+                                //     child: SizedBox(
+                                //       width: 213.h,
+                                //       child: Text(
+                                //         chatContent.value.toString(),
+                                //         maxLines: 1000,
+                                //         overflow: TextOverflow.ellipsis,
+                                //         style: CustomTextStyles.bodyMedium14
+                                //             .copyWith(
+                                //           height: 1.50,
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
+                                // SizedBox(height: 5.v),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 1.v, right: 21),
+                                        child: Text(
+                                          "Sending...",
+                                          style: CustomTextStyles
+                                              .bodySmallSkModernistBlack900,
+                                        ),
                                       ),
-                                    ),
 
-                                    /*CustomImageView(
-                                        svgPath: ImageConstant.imgCheckmarkRed400,
-                                        height: 16.adaptSize,
-                                        width: 16.adaptSize,
-                                        margin: EdgeInsets.only(left: 4.h,right: 15.h),
-                                      ),*/
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : Container(),
-                )
-              ]),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                  left: 15.h, right: 15, top: 10.v, bottom: 10.v),
-              child: Consumer(builder: (context, ref, _) {
-                final showEmoji = ref.watch(showEmojiProvider);
-
-                return Container(
-                  decoration: AppDecoration.outlineGray20001.copyWith(
-                    borderRadius: BorderRadiusStyle.roundedBorder17,
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                            left: 10,
-                            bottom: 10,
-                            top: 10,
-                          ),
-                          height: 60,
-                          width: double.infinity,
-                          color: Colors.white,
-                          child: Row(
-                            children: <Widget>[
-                              /// [camera button]
-
-                              GestureDetector(
-                                onTap: () async {
-                                  ref.read(showEmojiProvider.notifier).state =
-                                      false;
-
-                                  final cameraUsecase =
-                                      sl<PickCameraImageUsecase>();
-
-                                  final image = await cameraUsecase(NoInput());
-
-                                  if (image.isNotEmpty) {
-                                    onSendMessage('', 1, images: [File(image)]);
-                                  }
-                                },
-                                child: CustomImageView(
-                                  svgPath: ImageConstant.imgInstagram,
-                                  height: 24.adaptSize,
-                                  width: 24.adaptSize,
-                                  margin: EdgeInsets.only(bottom: 2.v),
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-
-                              SizedBox(
-                                width: 150.h,
-                                child: TextField(
-                                  onTap: () {
-                                    ref.read(showEmojiProvider.notifier).state =
-                                        false;
-                                  },
-                                  controller: messageController,
-                                  onChanged: (value) {
-                                    if (value.isNotEmpty) {
-                                      startTimer();
-                                      updateTypingStatus(isTyping: true);
-                                    } else {
-                                      updateTypingStatus(isTyping: false);
-                                    }
-                                  },
-                                  cursorColor: theme.colorScheme.primary,
-                                  decoration: InputDecoration(
-                                    hintText: "Write message...",
-                                    hintStyle: TextStyle(
-                                      color: Colors.black54,
-                                      height: 1,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    height: 1,
+                                      /*CustomImageView(
+                                          svgPath: ImageConstant.imgCheckmarkRed400,
+                                          height: 16.adaptSize,
+                                          width: 16.adaptSize,
+                                          margin: EdgeInsets.only(left: 4.h,right: 15.h),
+                                        ),*/
+                                    ],
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 13),
+                              ],
+                            ),
+                          )
+                        : Container(),
+                  )
+                ]),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 15.h, right: 15, top: 10.v, bottom: 10.v),
+                child: Consumer(builder: (context, ref, _) {
+                  final showEmoji = ref.watch(showEmojiProvider);
 
-                              /// [gallery button]
-                              InkWell(
-                                onTap: () async {
-                                  try {
+                  return Container(
+                    decoration: AppDecoration.outlineGray20001.copyWith(
+                      borderRadius: BorderRadiusStyle.roundedBorder17,
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Container(
+                            padding: const EdgeInsets.only(
+                              left: 10,
+                              bottom: 10,
+                              top: 10,
+                            ),
+                            height: 60,
+                            width: double.infinity,
+                            color: Colors.white,
+                            child: Row(
+                              children: <Widget>[
+                                /// [camera button]
+
+                                GestureDetector(
+                                  onTap: () async {
                                     ref.read(showEmojiProvider.notifier).state =
                                         false;
 
-                                    final pickGalleryImageUsecase =
-                                        sl<PickGalleryImageUsecase>();
+                                    final cameraUsecase =
+                                        sl<PickCameraImageUsecase>();
 
-                                    final image = await pickGalleryImageUsecase(
-                                        NoInput());
+                                    final image =
+                                        await cameraUsecase(NoInput());
 
                                     if (image.isNotEmpty) {
                                       onSendMessage('', 1,
                                           images: [File(image)]);
                                     }
-                                  } on ImageFileNotSupportedException catch (e) {
-                                    showToast(message: "${e.message}");
-                                  } catch (_) {}
-                                },
-                                child: SvgPicture.asset(
-                                    ImageConstant.imagePlaceholder),
-                              ),
-                              const SizedBox(width: 7),
-
-                              /// [emoji]
-                              InkWell(
-                                onTap: () async {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                  ref.read(showEmojiProvider.notifier).state =
-                                      !showEmoji;
-                                },
-                                child: SvgPicture.asset(ImageConstant.sticker),
-                              ),
-
-                              const SizedBox(width: 10),
-                              FloatingActionButton(
-                                onPressed: () {
-                                  onSendMessage(messageController.text, 0);
-                                },
-                                backgroundColor: appTheme.indigo900,
-                                elevation: 0,
-                                child: const Icon(
-                                  Icons.send,
-                                  color: Colors.white,
-                                  size: 18,
+                                  },
+                                  child: CustomImageView(
+                                    svgPath: ImageConstant.imgInstagram,
+                                    height: 24.adaptSize,
+                                    width: 24.adaptSize,
+                                    margin: EdgeInsets.only(bottom: 2.v),
+                                  ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 15),
+
+                                SizedBox(
+                                  width: 150.h,
+                                  child: TextField(
+                                    onTap: () {
+                                      ref
+                                          .read(showEmojiProvider.notifier)
+                                          .state = false;
+                                    },
+                                    controller: messageController,
+                                    onChanged: (value) {
+                                      if (value.isNotEmpty) {
+                                        startTimer();
+                                        updateTypingStatus(isTyping: true);
+                                      } else {
+                                        updateTypingStatus(isTyping: false);
+                                      }
+                                    },
+                                    cursorColor: theme.colorScheme.primary,
+                                    decoration: InputDecoration(
+                                      hintText: "Write message...",
+                                      hintStyle: TextStyle(
+                                        color: Colors.black54,
+                                        height: 1,
+                                      ),
+                                    ),
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      height: 1,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 13),
+
+                                /// [gallery button]
+                                InkWell(
+                                  onTap: () async {
+                                    try {
+                                      ref
+                                          .read(showEmojiProvider.notifier)
+                                          .state = false;
+
+                                      final pickGalleryImageUsecase =
+                                          sl<PickGalleryImageUsecase>();
+
+                                      final image =
+                                          await pickGalleryImageUsecase(
+                                              NoInput());
+
+                                      if (image.isNotEmpty) {
+                                        onSendMessage('', 1,
+                                            images: [File(image)]);
+                                      }
+                                    } on ImageFileNotSupportedException catch (e) {
+                                      showToast(message: "${e.message}");
+                                    } catch (_) {}
+                                  },
+                                  child: SvgPicture.asset(
+                                      ImageConstant.imagePlaceholder),
+                                ),
+                                const SizedBox(width: 7),
+
+                                /// [emoji]
+                                InkWell(
+                                  onTap: () async {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    ref.read(showEmojiProvider.notifier).state =
+                                        !showEmoji;
+                                  },
+                                  child:
+                                      SvgPicture.asset(ImageConstant.sticker),
+                                ),
+
+                                const SizedBox(width: 10),
+                                FloatingActionButton(
+                                  onPressed: () {
+                                    onSendMessage(messageController.text, 0);
+                                  },
+                                  backgroundColor: appTheme.indigo900,
+                                  elevation: 0,
+                                  child: const Icon(
+                                    Icons.send,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
 
-                      /// [Custom emoji widget]
-                      if (showEmoji)
-                        CustomEmojiWidget(
-                          controller: messageController,
-                          onEmojiSelected: (category, emoji) {},
-                        )
-                    ],
-                  ),
-                );
-              }),
-            ),
+                        /// [Custom emoji widget]
+                        if (showEmoji)
+                          CustomEmojiWidget(
+                            controller: messageController,
+                            onEmojiSelected: (category, emoji) {},
+                          )
+                      ],
+                    ),
+                  );
+                }),
+              ),
 
-            /// [Padding bottom]
-            SizedBox(
-              height: MediaQuery.of(context).viewInsets.bottom,
-            )
-          ]),
+              /// [Padding bottom]
+              SizedBox(
+                height: MediaQuery.of(context).viewInsets.bottom,
+              )
+            ]),
+      ),
     );
   }
 }
