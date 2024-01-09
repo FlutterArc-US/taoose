@@ -21,6 +21,7 @@ class NotificationsScreen extends GetWidget<NotificationsController> {
     mediaQueryData = MediaQuery.of(context);
     controller.getFollowRequests();
     if (controller.requests.isNotEmpty) controller.getRequests();
+
     return ValueListenableBuilder(
         valueListenable: newNotificationNotifier,
         builder: (context, value, child) {
