@@ -2,29 +2,25 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:taousapp/presentation/chat_screen/controller/messages_provider.dart';
-import 'package:taousapp/presentation/chat_screen/domain/usecases/create_message.dart';
-import 'package:taousapp/presentation/chat_screen/domain/usecases/get_all_messages.dart';
-import 'package:taousapp/presentation/chat_screen/domain/usecases/update_unread_messages_usecase.dart';
-import 'package:taousapp/presentation/chat_screen/models/message_model.dart';
-import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
-import 'package:taousapp/util/di/di.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:taousapp/common/usecases/pick_camera_image_usecase.dart';
 import 'package:taousapp/common/usecases/pick_gallery_image_usecase.dart';
 import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/core/utils/show_toast.dart';
 import 'package:taousapp/failures/failures.dart';
 import 'package:taousapp/infrastructure/usecase_input.dart';
+import 'package:taousapp/presentation/chat_screen/controller/messages_provider.dart';
 import 'package:taousapp/presentation/chat_screen/controller/show_emoji_provider.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/create_message.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/get_all_messages.dart';
+import 'package:taousapp/presentation/chat_screen/domain/usecases/update_unread_messages_usecase.dart';
+import 'package:taousapp/presentation/chat_screen/models/message_model.dart';
 import 'package:taousapp/presentation/chat_screen/models/message_type.dart';
 import 'package:taousapp/presentation/chat_screen/widgets/emoji_widget.dart';
+import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
+import 'package:taousapp/util/di/di.dart';
 import 'package:taousapp/widgets/custom_icon_button.dart';
 import 'package:taousapp/widgets/recieve_bubble.dart';
 import 'package:taousapp/widgets/recieve_image_bubble.dart';
@@ -481,7 +477,8 @@ class _ConversationViewState extends ConsumerState<ConversationView> {
                               ),
                               const SizedBox(width: 15),
 
-                              Expanded(
+                              SizedBox(
+                                width: 150.h,
                                 child: TextField(
                                   onTap: () {
                                     ref.read(showEmojiProvider.notifier).state =
@@ -497,10 +494,16 @@ class _ConversationViewState extends ConsumerState<ConversationView> {
                                     }
                                   },
                                   cursorColor: theme.colorScheme.primary,
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     hintText: "Write message...",
-                                    hintStyle: TextStyle(color: Colors.black54),
-                                    border: InputBorder.none,
+                                    hintStyle: TextStyle(
+                                      color: Colors.black54,
+                                      height: 1,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    height: 1,
                                   ),
                                 ),
                               ),
