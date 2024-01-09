@@ -112,8 +112,10 @@ class _MyAppState extends State<MyApp> {
     await readyNotificationSystem();
     var initialzationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettings =
-        InitializationSettings(android: initialzationSettingsAndroid);
+    var initializationSettings = InitializationSettings(
+      android: initialzationSettingsAndroid,
+      iOS: DarwinInitializationSettings()
+    );
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) {
@@ -215,7 +217,8 @@ class _MyAppState extends State<MyApp> {
                 .colorScheme
                 .copyWith(primary: ColorConstant.teal200)),
         translations: AppLocalization(),
-        locale: Get.deviceLocale, //for setting localization strings
+        locale: Get.deviceLocale,
+        //for setting localization strings
         fallbackLocale: Locale('en', 'US'),
         title: 'taousapp',
         initialBinding: InitialBindings(),
