@@ -136,7 +136,6 @@ class ProdcutDetailsScreen extends GetWidget<ProdcutDetailsController> {
                                     height: 50,
                                     child: DropdownSearch<String>(
                                       popupProps: PopupProps.modalBottomSheet(
-                                        showSelectedItems: true,
                                         isFilterOnline: true,
                                         showSearchBox: true,
                                         searchFieldProps: TextFieldProps(
