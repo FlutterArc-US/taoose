@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -9,7 +10,6 @@ import 'package:taousapp/core/app_export.dart';
 import 'package:taousapp/main.dart';
 import 'package:taousapp/presentation/home_screen/controller/home_controller.dart';
 import 'package:taousapp/presentation/prodcut_details_screen/models/prodcut_details_model.dart';
-import 'package:flutter/material.dart';
 
 /// A controller class for the ProdcutDetailsScreen.
 ///
@@ -122,7 +122,7 @@ class ProdcutDetailsController extends GetxController {
             {
               'id': 0,
               'timestamp': DateTime.now(),
-              'notification': ['Post Successful!', 'Your New Post Is Online.']
+              'notification': ['Post Successful!', 'Your Post Is Online.']
             }
           ],
         )
@@ -131,7 +131,7 @@ class ProdcutDetailsController extends GetxController {
       flutterLocalNotificationsPlugin.show(
           hashCode,
           'Post Successful!',
-          'Your New Post Is Online.',
+          'Your Post Is Online.',
           NotificationDetails(
             android: AndroidNotificationDetails(
               channel.id,
