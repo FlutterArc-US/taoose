@@ -1,6 +1,3 @@
-import '../messages_screen/widgets/usermessage_item_widget.dart';
-import 'controller/messages_controller.dart';
-import 'models/usermessage_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:outline_gradient_button/outline_gradient_button.dart';
 import 'package:taousapp/core/app_export.dart';
@@ -8,6 +5,10 @@ import 'package:taousapp/widgets/app_bar/appbar_title.dart';
 import 'package:taousapp/widgets/app_bar/custom_app_bar.dart';
 import 'package:taousapp/widgets/custom_bottom_bar.dart';
 import 'package:taousapp/widgets/custom_search_view.dart';
+
+import '../messages_screen/widgets/usermessage_item_widget.dart';
+import 'controller/messages_controller.dart';
+import 'models/usermessage_item_model.dart';
 
 // ignore_for_file: must_be_immutable
 class MessagesScreen extends GetWidget<MessagesController> {

@@ -6,45 +6,45 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  get: ^4.6.5
-  connectivity_plus: ^2.3.6
-  shared_preferences: ^2.0.15
-  cached_network_image: ^3.2.1
-  flutter_svg: ^1.1.6
-  outline_gradient_button: ^2.0.0+1
-  flutter_svg_provider: ^1.0.3
+  get: ^4.6.6
+  connectivity_plus: ^5.0.2
+  shared_preferences: ^2.2.2
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.9
+  outline_gradient_button: ^2.0.1+1
+  flutter_svg_provider: ^1.0.7
   grouped_list: ^5.1.2
-  dotted_border: 2.0.0+3
-  intl: ^0.18.0
-  firebase_core: ^2.17.0
+  dotted_border: ^2.1.0
+  intl: ^0.19.0
+  firebase_core: ^2.24.2
   country_codes: ^2.2.0
   carousel_slider: ^4.2.1
-  cloud_firestore: ^4.9.3
-  firebase_auth: ^4.10.1
+  cloud_firestore: ^4.14.0
+  firebase_auth: ^4.16.0
   loading_animation_widget: ^1.2.0+4
-  firebase_messaging: ^14.6.9
+  firebase_messaging: ^14.7.10
   overlay_support: ^2.1.0
-  flutter_local_notifications: ^13.0.0
+  flutter_local_notifications: ^16.3.0
   flutter_launcher_icons: ^0.13.1
-  timeago: ^3.5.0
-  firebase_storage: ^11.0.14
+  timeago: ^3.2.2
+  firebase_storage: ^11.6.0
   shimmer: ^3.0.0
   dropdown_search: ^5.0.6
-  image_picker: ^1.0.0
-  permission_handler: ^10.0.0
+  image_picker: ^1.0.6
+  permission_handler: ^11.1.0
   line_icons: ^2.0.3
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.6
 
 
-  freezed_annotation: ^2.2.0
-  json_annotation: ^4.8.0
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
 
   #DI
-  get_it: ^7.2.0
-  injectable: ^2.1.0
+  get_it: ^7.6.6
+  injectable: ^2.3.2
 
   # river-pod
-  flutter_riverpod: ^2.4.8
+  flutter_riverpod: ^2.4.9
 
   # emoji_picker_flutter
   emoji_picker_flutter: ^1.6.3
@@ -57,13 +57,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
   intl_phone_field: ^3.2.0
-  build_runner: ^2.3.3
+  build_runner: ^2.4.7
 
-  freezed: ^2.3.2
-  injectable_generator: ^2.1.4
-  json_serializable: ^6.6.1
+  freezed: ^2.4.6
+  injectable_generator: ^2.4.1
+  json_serializable: ^6.7.1
 
 
 flutter: 

@@ -37,7 +37,7 @@ class HomeScreen extends GetWidget<HomeController> {
     return SafeArea(
       child: Scaffold(
         extendBody: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: appTheme.whiteA700,
         /*appBar: CustomAppBar(
           title: AppbarImage1( 
             svgPath: ImageConstant.imgFrameIndigo900,
@@ -59,6 +59,7 @@ class HomeScreen extends GetWidget<HomeController> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20))),
             onPressed: () {
+              FocusManager.instance.primaryFocus?.unfocus();
               Get.toNamed(AppRoutes.prodcutDetailsScreen);
             },
             child: Icon(
@@ -115,7 +116,7 @@ class HomeScreen extends GetWidget<HomeController> {
                         padding: const EdgeInsets.all(8.0),
                         child: CustomOutlinedButton(
                           decoration: BoxDecoration(color: Colors.red),
-                          width: 70,
+                          width: 75.h,
                           text: 'Yes',
                           buttonTextStyle: CustomTextStyles.titleSmallSemiBold,
                           onTap: () {
@@ -126,7 +127,7 @@ class HomeScreen extends GetWidget<HomeController> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: CustomOutlinedButton(
-                          width: 70,
+                          width: 75.h,
                           text: 'No',
                           buttonTextStyle: CustomTextStyles.titleSmallSemiBold,
                           onTap: () {
@@ -159,6 +160,7 @@ class HomeScreen extends GetWidget<HomeController> {
       controller: controller.pageController,
       onPageChanged: (value) {
         controller.selectedIndex.value = value;
+        FocusManager.instance.primaryFocus?.unfocus();
         print(controller.selectedIndex.value);
         print('rrr' + value.toString());
       },
