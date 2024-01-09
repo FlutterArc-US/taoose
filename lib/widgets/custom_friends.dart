@@ -94,10 +94,10 @@ class CustomFriends extends StatelessWidget {
                       print(pController.checkFollowing(data).toString()),
                   //decoration: BoxDecoration(color: Colors.red),
                   height: 24.v,
-                  width: 81.h,
+                  width: 96.h,
                   text: "Following".tr,
                   margin: EdgeInsets.only(
-                    //left: 21.h,
+                    // left: 21.h,
                     top: 16.v,
                     bottom: 16.v,
                   ),
@@ -111,50 +111,49 @@ class CustomFriends extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 )
-              : 
-              data?['requests'].contains(hController.getUid().toString())?
-              CustomElevatedButton(
-                  onTap: () => print(pController.checkFollowing(data)),
-                  //decoration: BoxDecoration(color: Colors.red),
-                  height: 24.v,
-                  width: 81.h,
-                  text: "Requested".tr,
-                  margin: EdgeInsets.only(
-                    //left: 21.h,
-                    top: 16.v,
-                    bottom: 16.v,
-                  ),
-                  buttonStyle:
-                      // ignore: deprecated_member_use
-                      ElevatedButton.styleFrom(
-                          primary: theme.colorScheme.background),
-                  buttonTextStyle: TextStyle(
-                    color: appTheme.black900,
-                    fontSize: 10.fSize,
-                    fontFamily: 'Nunito Sans',
-                    fontWeight: FontWeight.w600,
-                  )):
-              CustomElevatedButton(
-                  onTap: () => print(pController.checkFollowing(data)),
-                  //decoration: BoxDecoration(color: Colors.red),
-                  height: 24.v,
-                  width: 81.h,
-                  text: "Follow".tr,
-                  margin: EdgeInsets.only(
-                    //left: 21.h,
-                    top: 16.v,
-                    bottom: 16.v,
-                  ),
-                  buttonStyle:
-                      // ignore: deprecated_member_use
-                      ElevatedButton.styleFrom(
-                          primary: theme.colorScheme.background),
-                  buttonTextStyle: TextStyle(
-                    color: appTheme.black900,
-                    fontSize: 12.fSize,
-                    fontFamily: 'Nunito Sans',
-                    fontWeight: FontWeight.w600,
-                  )),
+              : data?['requests'].contains(hController.getUid().toString())
+                  ? CustomElevatedButton(
+                      onTap: () => print(pController.checkFollowing(data)),
+                      //decoration: BoxDecoration(color: Colors.red),
+                      height: 24.v,
+                      width: 96.h,
+                      text: "Requested".tr,
+                      margin: EdgeInsets.only(
+                        //left: 21.h,
+                        top: 16.v,
+                        bottom: 16.v,
+                      ),
+                      buttonStyle:
+                          // ignore: deprecated_member_use
+                          ElevatedButton.styleFrom(
+                              primary: theme.colorScheme.background),
+                      buttonTextStyle: TextStyle(
+                        color: appTheme.black900,
+                        fontSize: 10.fSize,
+                        fontFamily: 'Nunito Sans',
+                        fontWeight: FontWeight.w600,
+                      ))
+                  : CustomElevatedButton(
+                      onTap: () => print(pController.checkFollowing(data)),
+                      //decoration: BoxDecoration(color: Colors.red),
+                      height: 24.v,
+                      width: 96.h,
+                      text: "Follow".tr,
+                      margin: EdgeInsets.only(
+                        //left: 21.h,
+                        top: 16.v,
+                        bottom: 16.v,
+                      ),
+                      buttonStyle:
+                          // ignore: deprecated_member_use
+                          ElevatedButton.styleFrom(
+                              primary: theme.colorScheme.background),
+                      buttonTextStyle: TextStyle(
+                        color: appTheme.black900,
+                        fontSize: 12.fSize,
+                        fontFamily: 'Nunito Sans',
+                        fontWeight: FontWeight.w600,
+                      )),
         ],
       ),
     );

@@ -1,15 +1,15 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:taousapp/presentation/notifications_screen/notifications_screen.dart';
-import 'package:taousapp/widgets/custom_post.dart';
-import 'package:taousapp/widgets/custom_search.dart';
-import 'controller/post_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:taousapp/core/app_export.dart';
+import 'package:taousapp/presentation/notifications_screen/notifications_screen.dart';
 import 'package:taousapp/widgets/app_bar/appbar_iconbutton.dart';
 import 'package:taousapp/widgets/app_bar/appbar_image_1.dart';
 import 'package:taousapp/widgets/app_bar/custom_app_bar.dart';
+import 'package:taousapp/widgets/custom_post.dart';
+import 'package:taousapp/widgets/custom_search.dart';
+
+import 'controller/post_controller.dart';
 
 // ignore_for_file: must_be_immutable
 class PostScreen extends GetWidget<PostController> {
@@ -34,14 +34,7 @@ class PostScreen extends GetWidget<PostController> {
           margin: EdgeInsets.only(left: 23.h),
         ),
         actions: [
-          AppbarIconbutton(
-            svgPath: ImageConstant.imgCharmsearch,
-            /*margin: EdgeInsets.symmetric(
-              horizontal: 2.h,
-              vertical: 2.v,
-            ),*/
-            onTap: () => CustomSearch().chatModalBottomSheet(context),
-          ),
+          const CustomSearch(),
           AppbarIconbutton(
             svgPath: ImageConstant.imgIconslight,
             margin: EdgeInsets.only(
