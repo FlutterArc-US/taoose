@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:taousapp/core/app_export.dart';
@@ -12,7 +13,6 @@ import 'package:taousapp/widgets/custom_outlined_button.dart';
 import 'package:taousapp/widgets/custom_text_form_field.dart';
 
 import 'controller/edit_profile_controller.dart';
-import 'package:flutter/material.dart';
 
 // ignore_for_file: must_be_immutable
 class EditprofileScreen extends GetWidget<EditprofileController> {
@@ -29,164 +29,245 @@ class EditprofileScreen extends GetWidget<EditprofileController> {
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
 
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: CustomAppBar(
-          centerTitle: true,
-          title: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 22.h,
-                  left: 22.h,
-                  //right: 22.h,
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      height: 30.h,
-                      width: 30.h,
-                      child: AppbarImage1(
-                        onTap: () => Get.back(),
-                        svgPath: ImageConstant.imgBackarrow,
-                        margin: EdgeInsets.only(
-                          top: 6.v,
-                          bottom: 5.v,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: CustomAppBar(
+            centerTitle: true,
+            title: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 22.h,
+                    left: 22.h,
+                    //right: 22.h,
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        height: 30.h,
+                        width: 30.h,
+                        child: AppbarImage1(
+                          onTap: () => Get.back(),
+                          svgPath: ImageConstant.imgBackarrow,
+                          margin: EdgeInsets.only(
+                            top: 6.v,
+                            bottom: 5.v,
+                          ),
                         ),
                       ),
-                    ),
-                    Spacer(),
-                    Center(
-                      child: AppbarSubtitle(
-                        text: "Profile".tr,
-                        margin: EdgeInsets.only(right: 50.h),
+                      Spacer(),
+                      Center(
+                        child: AppbarSubtitle(
+                          text: "Profile".tr,
+                          margin: EdgeInsets.only(right: 50.h),
+                        ),
                       ),
-                    ),
-                    Spacer(),
-                    //Container(color: Colors.black,width: 30, height: 30,margin: EdgeInsets.only(right: 22.h,left: 22.h),)
-                  ],
+                      Spacer(),
+                      //Container(color: Colors.black,width: 30, height: 30,margin: EdgeInsets.only(right: 22.h,left: 22.h),)
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 20.v),
-            ],
+                SizedBox(height: 20.v),
+              ],
+            ),
+            //styleType: Style.bgFill_1,
           ),
-          //styleType: Style.bgFill_1,
-        ),
-        body: Form(
-          //autovalidateMode: AutovalidateMode.always,
-          key: _formKey,
-          child: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //SizedBox(height: 32.v),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: 15.h,
-                        right: 15.h,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 32.v),
-                          GetX<EditprofileController>(
-                            init: EditprofileController(),
-                            builder: (value) => Align(
-                              alignment: Alignment.center,
-                              child: SizedBox(
-                                height: 128.adaptSize,
-                                width: 128.adaptSize,
-                                child: Stack(
-                                  alignment: Alignment.bottomRight,
-                                  children: [
-                                    controller.imgUrl.value != 'null'
-                                        ? ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(100.00)),
-                                            child: Image.network(
-                                              controller.imgUrl.value,
-                                              fit: BoxFit.fill,
-                                              height: 100.adaptSize,
-                                              width: 100.adaptSize,
+          body: Form(
+            //autovalidateMode: AutovalidateMode.always,
+            key: _formKey,
+            child: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //SizedBox(height: 32.v),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: 15.h,
+                          right: 15.h,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 32.v),
+                            GetX<EditprofileController>(
+                              init: EditprofileController(),
+                              builder: (value) => Align(
+                                alignment: Alignment.center,
+                                child: SizedBox(
+                                  height: 128.adaptSize,
+                                  width: 128.adaptSize,
+                                  child: Stack(
+                                    alignment: Alignment.bottomRight,
+                                    children: [
+                                      controller.imgUrl.value != 'null'
+                                          ? ClipRRect(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(100.00)),
+                                              child: Image.network(
+                                                controller.imgUrl.value,
+                                                fit: BoxFit.fill,
+                                                height: 100.adaptSize,
+                                                width: 100.adaptSize,
+                                              ),
+                                            )
+                                          : CustomImageView(
+                                              svgPath:
+                                                  ImageConstant.imgUserPrimary,
+                                              height: 128.adaptSize,
+                                              width: 128.adaptSize,
+                                              radius: BorderRadius.circular(
+                                                64.h,
+                                              ),
+                                              alignment: Alignment.center,
                                             ),
-                                          )
-                                        : CustomImageView(
-                                            svgPath:
-                                                ImageConstant.imgUserPrimary,
-                                            height: 128.adaptSize,
-                                            width: 128.adaptSize,
-                                            radius: BorderRadius.circular(
-                                              64.h,
-                                            ),
-                                            alignment: Alignment.center,
-                                          ),
-                                    CustomIconButton(
-                                      height: 37.adaptSize,
-                                      width: 37.adaptSize,
-                                      margin: EdgeInsets.only(bottom: 4.v),
-                                      padding: EdgeInsets.all(9.h),
-                                      decoration:
-                                          IconButtonStyleHelper.outlineGray,
-                                      alignment: Alignment.bottomRight,
-                                      child: CustomImageView(
-                                        svgPath: ImageConstant.imgCamera,
-                                      ),
-                                      onTap: () async {
-                                        await showOptions();
-                                        if (controller.changePic.value ==
-                                            true) {
-                                          await showPicture(context);
-                                          if (controller.uploading.value ==
-                                              true)
-                                            showLoaderDialog(
-                                                context, "Uploading...");
-                                        }
+                                      CustomIconButton(
+                                        height: 37.adaptSize,
+                                        width: 37.adaptSize,
+                                        margin: EdgeInsets.only(bottom: 4.v),
+                                        padding: EdgeInsets.all(9.h),
+                                        decoration:
+                                            IconButtonStyleHelper.outlineGray,
+                                        alignment: Alignment.bottomRight,
+                                        child: CustomImageView(
+                                          svgPath: ImageConstant.imgCamera,
+                                        ),
+                                        onTap: () async {
+                                          await showOptions();
+                                          if (controller.changePic.value ==
+                                              true) {
+                                            await showPicture(context);
+                                            if (controller.uploading.value ==
+                                                true)
+                                              showLoaderDialog(
+                                                  context, "Uploading...");
+                                          }
 
-                                        //showPicture(context);
-                                      },
-                                    ),
-                                  ],
+                                          //showPicture(context);
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 27.v),
-                          Builder(builder: (context) {
-                            return Column(
+                            SizedBox(height: 27.v),
+                            Builder(builder: (context) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: 33.h,
+                                      top: 10.v,
+                                      right: 32.h,
+                                    ),
+                                    child: Text(
+                                      'Full Name:',
+                                      style: CustomTextStyles
+                                          .bodyMediumAirbnbCerealAppGray600,
+                                    ),
+                                  ),
+                                  CustomTextFormField(
+                                    //   readonly: true,
+                                    margin: EdgeInsets.only(
+                                      left: 33.h,
+                                      top: 20.v,
+                                      right: 32.h,
+                                    ),
+                                    controller: controller.newNameController,
+                                    autofocus: false,
+                                    focusNode: controller.newNameNode,
+                                    hintText: controller.hController
+                                        .getName()
+                                        .toString(),
+                                    validator: (fullname) =>
+                                        controller.validateFullName(fullname),
+
+                                    hintStyle: CustomTextStyles
+                                        .bodyMediumAirbnbCerealAppGray600,
+                                    prefix: Container(
+                                      margin: EdgeInsets.only(
+                                        top: 1.v,
+                                        right: 8.h,
+                                        bottom: 10.v,
+                                      ),
+                                      child: CustomImageView(
+                                        svgPath: ImageConstant.imgUser,
+                                        color: appTheme.gray500,
+                                      ),
+                                    ),
+                                    prefixConstraints: BoxConstraints(
+                                      maxHeight: 28.v,
+                                    ),
+                                    contentPadding:
+                                        EdgeInsets.only(right: 26.h),
+                                    inputFormatters: [],
+                                  ),
+                                ],
+                              );
+                            }),
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
                                   margin: EdgeInsets.only(
                                     left: 33.h,
-                                    top: 10.v,
+                                    top: 40.v,
                                     right: 32.h,
                                   ),
                                   child: Text(
-                                    'Full Name:',
+                                    'Username:',
                                     style: CustomTextStyles
                                         .bodyMediumAirbnbCerealAppGray600,
                                   ),
                                 ),
-                                CustomTextFormField(
+                                CustomTextFormField1(
+                                  onChanged: (value) {
+                                    controller
+                                        .validateUsername(value.toLowerCase());
+                                  },
                                   //   readonly: true,
                                   margin: EdgeInsets.only(
                                     left: 33.h,
-                                    top: 20.v,
+                                    top: 10.v,
                                     right: 32.h,
                                   ),
-                                  controller: controller.newNameController,
                                   autofocus: false,
-                                  focusNode: controller.newNameNode,
-                                  hintText: controller.hController
-                                      .getName()
-                                      .toString(),
-                                  validator: (fullname) =>
-                                      controller.validateFullName(fullname),
+                                  focusNode: controller.newUsernameNode,
+                                  //hintText: data['UserName'].toString(),
 
+                                  controller: controller.newUsernameController,
+                                  validator: (username) {
+                                    if (controller.usernameAvailable.value ==
+                                            false &&
+                                        username!.toLowerCase() !=
+                                            controller
+                                                .hController.username.value) {
+                                      return 'Username Already Taken.';
+                                    }
+                                    if (username.toString() == "") {
+                                      return 'Username cannot be empty';
+                                    }
+
+                                    final RegExp usernamePattern = RegExp(
+                                        r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$');
+                                    if (!usernamePattern.hasMatch(username!)) {
+                                      return 'Invalid username format';
+                                    }
+                                    return null; // Return null to indicate a valid username
+                                  },
+                                  //userNameController: editprofileController,
+                                  // validator: (username) =>
+                                  //     SignUpTabContainerController()
+                                  //         .validateUserName(username),
                                   hintStyle: CustomTextStyles
                                       .bodyMediumAirbnbCerealAppGray600,
                                   prefix: Container(
@@ -203,175 +284,101 @@ class EditprofileScreen extends GetWidget<EditprofileController> {
                                   prefixConstraints: BoxConstraints(
                                     maxHeight: 28.v,
                                   ),
-                                  contentPadding: EdgeInsets.only(right: 26.h), inputFormatters: [],
+                                  contentPadding: EdgeInsets.only(right: 26.h),
+                                  userNameController: controller,
                                 ),
                               ],
-                            );
-                          }),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(
-                                  left: 33.h,
-                                  top: 40.v,
-                                  right: 32.h,
-                                ),
-                                child: Text(
-                                  'Username:',
-                                  style: CustomTextStyles
-                                      .bodyMediumAirbnbCerealAppGray600,
-                                ),
-                              ),
-                              CustomTextFormField1(
-                                onChanged: (value) {
-                                  controller
-                                      .validateUsername(value.toLowerCase());
-                                },
-                                //   readonly: true,
-                                margin: EdgeInsets.only(
-                                  left: 33.h,
-                                  top: 10.v,
-                                  right: 32.h,
-                                ),
-                                autofocus: false,
-                                focusNode: controller.newUsernameNode,
-                                //hintText: data['UserName'].toString(),
-
-                                controller: controller.newUsernameController,
-                                validator: (username) {
-                                  if (controller.usernameAvailable.value ==
-                                          false &&
-                                      username!.toLowerCase() !=
-                                          controller.hController.username.value) {
-                                    return 'Username Already Taken.';
-                                  }
-                                  if (username.toString() == "") {
-                                    return 'Username cannot be empty';
-                                  }
-
-                                  final RegExp usernamePattern = RegExp(
-                                      r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$');
-                                  if (!usernamePattern.hasMatch(username!)) {
-                                    return 'Invalid username format';
-                                  }
-                                  return null; // Return null to indicate a valid username
-                                },
-                                //userNameController: editprofileController,
-                                // validator: (username) =>
-                                //     SignUpTabContainerController()
-                                //         .validateUserName(username),
-                                hintStyle: CustomTextStyles
-                                    .bodyMediumAirbnbCerealAppGray600,
-                                prefix: Container(
-                                  margin: EdgeInsets.only(
-                                    top: 1.v,
-                                    right: 8.h,
-                                    bottom: 10.v,
-                                  ),
-                                  child: CustomImageView(
-                                    svgPath: ImageConstant.imgUser,
-                                    color: appTheme.gray500,
-                                  ),
-                                ),
-                                prefixConstraints: BoxConstraints(
-                                  maxHeight: 28.v,
-                                ),
-                                contentPadding: EdgeInsets.only(right: 26.h),
-                                userNameController: controller,
-                              ),
-                            ],
-                          ),
-                          /*
-                          CustomTextFormField1(
-                            //   readonly: true,
-                            margin: EdgeInsets.only(
-                              left: 33.h,
-                              top: 44.v,
-                              right: 32.h,
                             ),
-                            autofocus: false,
-                            focusNode: controller.newNameNode,
-                            hintText: "username",
-
-                            controller:
-                                controller.newUsernameController,
-                            userNameController: controller,
-                            validator: (username) {
-                              if (username?.isEmpty ?? true) {
-                                return 'Username cannot be empty';
-                              }
-                              final RegExp usernamePattern = RegExp(
-                                  r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$');
-                              if (!usernamePattern.hasMatch(username!)) {
-                                return 'Invalid username format';
-                              }
-                              return null; // Return null to indicate a valid username
-                            },
-                            hintStyle: CustomTextStyles.bodyMediumGray90005,
-                            prefix: Container(
+                            /*
+                            CustomTextFormField1(
+                              //   readonly: true,
                               margin: EdgeInsets.only(
-                                top: 1.v,
-                                right: 8.h,
-                                bottom: 10.v,
+                                left: 33.h,
+                                top: 44.v,
+                                right: 32.h,
                               ),
-                              child: CustomImageView(
-                                svgPath: ImageConstant.imgUser,
-                                color: appTheme.gray500,
-                              ),
-                            ),
-                            prefixConstraints: BoxConstraints(
-                              maxHeight: 28.v,
-                            ),
-                            contentPadding: EdgeInsets.only(right: 26.h),
-                          ),*/
-                          SizedBox(height: 40.v),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 35.0, right: 35.0),
-                            child: CustomElevatedButton(
-                                text: "Update",
+                              autofocus: false,
+                              focusNode: controller.newNameNode,
+                              hintText: "username",
+
+                              controller:
+                                  controller.newUsernameController,
+                              userNameController: controller,
+                              validator: (username) {
+                                if (username?.isEmpty ?? true) {
+                                  return 'Username cannot be empty';
+                                }
+                                final RegExp usernamePattern = RegExp(
+                                    r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$');
+                                if (!usernamePattern.hasMatch(username!)) {
+                                  return 'Invalid username format';
+                                }
+                                return null; // Return null to indicate a valid username
+                              },
+                              hintStyle: CustomTextStyles.bodyMediumGray90005,
+                              prefix: Container(
                                 margin: EdgeInsets.only(
-                                  left: 1.h,
-                                  top: 20.v,
+                                  top: 1.v,
+                                  right: 8.h,
+                                  bottom: 10.v,
                                 ),
-                                buttonStyle: CustomButtonStyles.fillPrimary,
-                                onTap: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    if (controller.newNameController.text
-                                            .toLowerCase() !=
-                                        controller.hController
-                                            .getName()
-                                            .toString()) {
-                                      //showLoaderDialog1(context);
-                                      // print(editprofileController
-                                      //     .newNameController.text);
-                                      // print(controller.hController
-                                      //     .getName()
-                                      //     .toString());
-                                      controller.updateFirstName(controller
-                                          .newNameController.text
-                                          .toLowerCase());
+                                child: CustomImageView(
+                                  svgPath: ImageConstant.imgUser,
+                                  color: appTheme.gray500,
+                                ),
+                              ),
+                              prefixConstraints: BoxConstraints(
+                                maxHeight: 28.v,
+                              ),
+                              contentPadding: EdgeInsets.only(right: 26.h),
+                            ),*/
+                            SizedBox(height: 40.v),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 35.0, right: 35.0),
+                              child: CustomElevatedButton(
+                                  text: "Update",
+                                  margin: EdgeInsets.only(
+                                    left: 1.h,
+                                    top: 20.v,
+                                  ),
+                                  buttonStyle: CustomButtonStyles.fillPrimary,
+                                  onTap: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      if (controller.newNameController.text
+                                              .toLowerCase() !=
+                                          controller.hController
+                                              .getName()
+                                              .toString()) {
+                                        //showLoaderDialog1(context);
+                                        // print(editprofileController
+                                        //     .newNameController.text);
+                                        // print(controller.hController
+                                        //     .getName()
+                                        //     .toString());
+                                        controller.updateFirstName(controller
+                                            .newNameController.text
+                                            .toLowerCase());
+                                      }
+                                      if (controller.newUsernameController.text
+                                              .toLowerCase() !=
+                                          controller.hController.username.value
+                                              .toString()) {
+                                        //showLoaderDialog1(context);
+                                        controller.updateUsername(controller
+                                            .newUsernameController.text
+                                            .toLowerCase());
+                                      }
                                     }
-                                    if (controller.newUsernameController.text
-                                            .toLowerCase() !=
-                                        controller.hController
-                                            .username.value
-                                            .toString()) {
-                                      //showLoaderDialog1(context);
-                                      controller.updateUsername(controller
-                                          .newUsernameController.text
-                                          .toLowerCase());
-                                    }
-                                  }
-                                }),
-                          ),
-                        ],
+                                  }),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
